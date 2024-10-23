@@ -36,7 +36,7 @@ const HomeScreen = () => {
     <Box flex={1} bg={colors.bg_home}>
       <Divider mx={4} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
-        <Box bg={colors.bg_home} pt={1} px={4}  marginBottom={3}>
+        <Box bg={colors.bg_home} pt={1} px={4} marginBottom={3}>
           <HStack mt={1} justifyContent="space-between" alignItems="center" space={2}>
             <VStack>
               <Select
@@ -84,7 +84,7 @@ const HomeScreen = () => {
             style={{ width: "100%", height: 670, resizeMode: 'cover' }}
           >
             <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 70 }}>
-              <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+              <Text position="absolute" top="1%" left="5%" bg="white" px={2} fontSize="sm" color={"#00C2C2"}>
                 {item.Title}
               </Text>
               <TouchableOpacity
@@ -92,29 +92,36 @@ const HomeScreen = () => {
                   display: 'flex',
                   flexDirection: 'row',
                   justifyContent: 'center',
+                  margin:20,
+                  width:'90%',
                   alignItems: 'center',
                   backgroundColor: colors.bg_button,
-                  padding: 10,
+                  padding: 5,
                   borderRadius: 5
                 }}
                 onPress={() => navigation.navigate('CATEGORIES')}
               >
-                <Text
-                  style={{
-                    color: '#fff',
-                    width: '80%',
-                    textAlign: 'center',
-                    paddingHorizontal: 10,
-                    paddingVertical: 5
-                  }}
-                >
-                  SHOP NOW
-                </Text>
-                <IconButton
-                  onPress={() => setShowOptionModal(true)}
-                  icon={<Icon name="arrow-forward" size={20} color="black" />}
-                  style={{ marginLeft: 10 }}
-                />
+                <View style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  borderRadius: 5,
+                  color: '#fff',
+                  
+                }} >
+                  <Text
+                    style={{
+                      color: '#fff',
+                    }}
+                  >
+                    SHOP NOW
+                  </Text>
+                  <IconButton
+                    onPress={() => setShowOptionModal(true)}
+                    icon={<Icon name="arrow-forward" size={20} color="black" />}
+                    style={{ marginLeft: 10 }}
+                  />
+                </View>
               </TouchableOpacity>
 
             </View>
