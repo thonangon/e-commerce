@@ -39,6 +39,12 @@ urlpatterns = [
     path('api/api.json/', schema_view.without_ui(cache_timeout=0),name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',cache_timeout=0), name='schema-redoc'),
     path('category/', include('category.urls')),
-    path('upload/',include('media.urls'))
+    path('upload/',include('media.urls')),
+    path('size/',include('sizes.urls')),
+    path('color/',include('colors.urls')),
+    # path('product/',include('product.urls')),
+    # path('cart/',include('cart.urls')),
+    # path('order/',include('order.urls')),
+    # path('payment/',include('payment.urls')),
 
 ]
