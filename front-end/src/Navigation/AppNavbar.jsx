@@ -15,6 +15,7 @@ import FavoriteScreen from '../screen/FavoriteScreen';
 import AddressDelivery from '../screen/AddressScreen';
 import PlaceOrder from '../screen/PlaceOrderScreen';
 import ProductScreen from '../screen/ProductScreen';
+import ProductDetail from '../screen/ProductDetail';
 import Tabs from './tabBar';
 
 const Stack = createNativeStackNavigator();
@@ -73,6 +74,7 @@ const App = () => {
       <Stack.Screen name="ADDRESS" component={AddressDelivery} />
       <Stack.Screen name="PLACEORDER" component={PlaceOrder} />
       <Stack.Screen name="PRODUCTSHOES" component={ProductScreen} />
+      <Stack.Screen name="PRODUCTSOCKER" component={ProductDetail} />
     </Stack.Navigator>
   );
 }

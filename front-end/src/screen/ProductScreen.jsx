@@ -6,9 +6,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const ShoesScreen = () => {
   const navigation = useNavigation();
-  const [showOptionModal, setShowOptionModal] = useState(false); // Modal state
+  const [showOptionModal, setShowOptionModal] = useState(false); 
 
-  const shoes= [
+  const shoes = [
     { id: 1, name: 'SANDALS & SLIDES', image: require('../assets/images/Soccer/white/F50_League_Multi-Ground_Soccer_Cleats_White_IE0604_03_standard.jpeg') },
     { id: 2, name: 'WORKOUT & GYM', image: require('../assets/images/Soccer/white/F50_League_Multi-Ground_Soccer_Cleats_White_IE0604_03_standard.jpeg') },
     { id: 3, name: 'HIKING', image: require('../assets/images/Soccer/black/Copa_Gloro_II_Firm_Ground_Soccer_Cleats_Black_IG8740_02_standard.jpeg') },
@@ -20,7 +20,15 @@ const ShoesScreen = () => {
   ];
 
   const handleCheckIn = () => {
-    navigation.goBack(); // Fixed navigation back
+    navigation.goBack(); 
+  };
+
+  const handleNavigation = (shoeId, shoeName) => {
+    if (shoeId === 2) {
+      navigation.navigate('PRODUCTSOCKER', { id: shoeId, name: shoeName });
+    } else {
+      navigation.navigate('PRODUCTSOCKER', { id: shoeId, name: shoeName });
+    }
   };
 
   return (
@@ -31,28 +39,29 @@ const ShoesScreen = () => {
       </HStack>
       <ScrollView>
         <Box flex="1" bg="#03A1AB" mt={2}>
-            {shoes.map((item, id) => (
+          {shoes.map((item, id) => (
             <VStack key={id}>
-                <Box bg="white">
-                    <HStack flex="1" justifyContent="space-between">
-                        <Image
-                            source={item.image}
-                            alt={item.name}
-                            style={{ width: 150, height: 150 }}
-                            />
-                        <Text >{item.name}</Text>
-                        <IconButton 
-                            onPress={() => setShowOptionModal(true)} 
-                            icon={<Icon name="chevron-forward-outline" size={20} color="black" />}
-                            />
-                    </HStack>
-                </Box>
-                <Divider />
+              <Box bg="white">
+                <HStack flex="1" justifyContent="space-between">
+                  <Image
+                    source={item.image}
+                    alt={item.name}
+                    style={{ width: 150, height: 150 }}
+                  />
+                  <Text>{item.name}</Text>
+                  <IconButton
+                    onPress={() => handleNavigation(item.id, item.name)}  
+                    icon={<Icon name="chevron-forward-outline" size={20} color="black" />}
+                  />
+                </HStack>
+              </Box>
+              <Divider />
             </VStack>
-            ))}
+          ))}
         </Box>
       </ScrollView>
     </VStack>
   );
 };
+
 export default ShoesScreen;
