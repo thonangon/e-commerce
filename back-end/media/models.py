@@ -7,4 +7,3 @@ class Media(models.Model):
     productId = models.ForeignKey('product.Product', on_delete=models.CASCADE, related_name='images',null=True)
     def __str__(self):
         return str(self.media_id)
-    

@@ -14,7 +14,7 @@ const PlaceOrderScreen = () => {
         {/* Header */}
         <HStack justifyContent="space-between"  alignItems="center">
           <Text fontSize="lg" fontWeight="bold">PLACE ORDER</Text>
-          <Button variant="ghost" colorScheme="coolGray" size="sm" onPress={handleBack}>
+          <Button variant="ghost" colorScheme="coolGray" size="sm" onPresas={handleBack}>
             <Text fontSize="lg">✕</Text>
           </Button>
         </HStack>

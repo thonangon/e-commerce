@@ -110,7 +110,7 @@ CORS_ORIGIN_REGEX_WHITELIST = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shopping_db',     
+        'NAME': 'shop_db',     
         'USER': 'thona',     
         'PASSWORD': 'djpassword',
         'HOST': 'localhost',        
