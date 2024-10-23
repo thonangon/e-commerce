@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('category', '0001_initial'),
+        
         ('colors', '0001_initial'),
         ('media', '0001_initial'),
         ('sizes', '0001_initial'),
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(max_length=255)),
                 ('heading', models.CharField(max_length=255)),
                 ('subHeading', models.CharField(max_length=255)),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='category.categories')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='category.category')),
                 ('colors', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='colors.color')),
                 ('media', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='media.media')),
                 ('sizes', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sizes.size')),
