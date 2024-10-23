@@ -7,8 +7,8 @@ import CustomModal from '../components/OptionComponent';
 
 const ShoppingBag = () => {
   const navigation = useNavigation();
-  const [showModal, setShowModal] = useState(false);  // Control the main checkout modal visibility
-  const [showOptionModal, setShowOptionModal] = useState(false);  // Control the Option modal visibility
+  const [showModal, setShowModal] = useState(false);  
+  const [showOptionModal, setShowOptionModal] = useState(false); 
 
   const handleAddress = () => {
     navigation.navigate('ADDRESS');

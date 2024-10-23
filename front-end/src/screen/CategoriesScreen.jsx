@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Modal } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 
-// Product Card Component
 const ProductCard = ({ image, name, price, code }) => (
   <Box bg="white" rounded="md" shadow={2} width={250}>
     <Image source={image} alt={name} style={{ height: 350, width: '100%' }} />
@@ -31,12 +30,10 @@ const HomeScreen = () => {
   ];
   const handleShoes = (category) => {
     navigation.navigate('PRODUCTSHOES');
-    // if (category[0] === 0) {
-    // }
+
   }
   return (
     <ScrollView bg="#fff">
-      {/* Header Section */}
       <Text ml={3}>BACK TO SCHOOL</Text>
       <Box>
         <Image
@@ -51,7 +48,6 @@ const HomeScreen = () => {
           30% off full price and sale. Use code: KIDS
         </Text>
       </Box>
-      {/* Category Section */}
       <VStack space={4} mt={5}>
         {categories.map((category, idx) => (
           <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1} >
