@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
 import { NativeBaseProvider, Box, VStack, HStack, Image, Text, Button, Divider, IconButton, Modal } from 'native-base';
-// import Icon from 'react-native-vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import CustomModal from '../components/OptionComponent';
 
 const ShoppingBag = () => {
   const navigation = useNavigation();
-  const [showModal, setShowModal] = useState(false);  
-  const [showOptionModal, setShowOptionModal] = useState(false); 
+  const [showModal, setShowModal] = useState(false);  // Control the main checkout modal visibility
+  const [showOptionModal, setShowOptionModal] = useState(false);  // Control the Option modal visibility
 
   const handleAddress = () => {
     navigation.navigate('ADDRESS');

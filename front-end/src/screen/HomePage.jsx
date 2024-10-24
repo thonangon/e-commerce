@@ -1,101 +1,153 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Dimensions } from 'react-native';
-import { Box, Button, Center, Divider, HStack, ScrollView, Text, VStack, Select } from 'native-base';
-import axios from '../../api/axios'; // Use custom axios instance
-
+import { Image, TouchableOpacity } from 'react-native';
+import { Box, Button, Center, Divider, HStack, IconButton, ScrollView, Text, VStack, View, Select } from 'native-base';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import categories from './CategoriesScreen';
+import Chart from './ChatScreen';
+import FavoriteScreen from './FavoriteScreen';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+import ButtonClick from '../components/Button';
+import { colors } from "../utils/colors";
+import axios from '../../api/axios';
 const HomeScreen = () => {
   const [selected, setSelected] = useState('');
-  const [categoryList, setCategoryList] = useState([]);
-
-  useEffect(() => {
-    getList();
-  }, []);
-
-  const getList = () => {
-    axios.get('/category/main-categories/')
-      .then((res) => {
-        setCategoryList(res.data); // Assuming res.data is an array of categories
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const handleCategorySelect = (category) => {
-    setSelected(category);
-    console.log(`Selected Category: ${category}`);
-  };
-
   const data = [
     { key: '1', image: require('../assets/img-home.png') },
     { key: '2', image: require('../assets/home1.png') },
-    // Additional images...
+    { key: '3', image: require('../assets/home3.png') },
+    { key: '4', image: require('../assets/home4.png') },
+    { key: '5', image: require('../assets/home5.png') },
+    { key: '6', image: require('../assets/home6.png') },
+    { key: '7', image: require('../assets/home7.png') },
+    { key: '8', image: require('../assets/home8.png') },
+    { key: '9', image: require('../assets/home9.png') },
   ];
 
-  const screenHeight = Dimensions.get('window').height;
+  const categories = ['Soccer', 'Running', 'Sneakers', 'Walking'];
+
+  const handleCategorySelect = (category) => {
+    console.log(`${category} clicked`);
+  };
 
   return (
-    <Box flex={1} bg="#F5F5F5">
+    <Box flex={1} bg={colors.bg_home}>
       <Divider mx={4} />
-      
-      {/* Horizontal Scroll for Category Buttons */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
-        <Box pt={1} px={4}>
-          <HStack mt={1} space={2} alignItems="center">
-            <VStack>
+        <Box bg={colors.bg_home} pt={1} px={4}>
+          <HStack mt={1} justifyContent="space-between" alignItems="center" space={2}>
+            <VStack >
               <Select
                 selectedValue={selected}
-                minWidth="200"
+                minWidth="15"
                 height="30px"
-                placeholder="Select Category"
+                accessibilityLabel="Choose Category"
+                placeholder="Men's"
                 _selectedItem={{
                   bg: "cyan.600",
-                  // endIcon: <Icon name="checkmark-outline" size={16} color="white" />,
+                  endIcon: <Icon name="checkmark-outline" size={16} color="white" />
                 }}
                 onValueChange={(itemValue) => setSelected(itemValue)}
-                // dropdownIcon={<Icon name="chevron-down-outline" size={16} color="black" />}
+                variant="filled"
+                dropdownIcon={<Icon name="chevron-down-outline" size={16} color="black" />}
               >
-                {categoryList.map((category, index) => (
-                  <Select.Item key={index} label={category.name} value={category.name} />
-                ))}
+                <Select.Item label="Men's" value="Men's" />
+                <Select.Item label="Women's" value="Women's" />
+                <Select.Item label="Kids" value="Kids" />
               </Select>
             </VStack>
 
-            <HStack space={2}>
-              {categoryList.map((category, index) => (
-                <Button
-                  key={index}
-                  py={1}
-                  variant={category.name === selected ? 'outline' : 'solid'}
-                  bg={category.name === selected ? '#00F0FF' : 'white'}
-                  _text={{ color: 'black' }}
-                  onPress={() => handleCategorySelect(category.name)}
-                >
-                  {category.name}
-                </Button>
-              ))}
-            </HStack>
+            {/* Other Categories */}
+            {categories.map((category, index) => (
+              <Button
+                key={index}
+                py={1}
+                variant={category === 'Soccer' ? 'outline' : 'solid'}
+                bg={category === 'Soccer' ? '#00F0FF' : 'white'}
+                _text={{ color: category === 'Soccer' ? 'black' : 'black' }}
+                onPress={() => handleCategorySelect(category)}
+              >
+                {category}
+              </Button>
+            ))}
           </HStack>
         </Box>
       </ScrollView>
 
-      {/* Image Gallery */}
       <ScrollView>
         <Center>
           {data.map((item, index) => (
             <Image
               key={index}
               source={item.image}
-              style={{ width: "100%", height: screenHeight, resizeMode: 'cover' }}
+              style={{ width: "100%", height: 670, resizeMode: 'cover' }}
             />
           ))}
-          <Text position="absolute" top="1%" left="5%" bg="white" px={2} fontSize="sm" color="#00C2C2">
+          <Text position="absolute" top="1%" left="5%" bg="white" px={2} fontSize="sm" color={"#00C2C2"}>
             SOCCER
           </Text>
         </Center>
       </ScrollView>
+
+
+      <ButtonClick color="#fff" bg={colors.bg_button} title="SHOP NOW"></ButtonClick>
     </Box>
   );
 };
+const Tab = createBottomTabNavigator();
+const App = () => {
+  const navigation = useNavigation();
+  const handleSignup = () => {
+    navigation.navigate('CAROUSEL');
+  };
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: () => {
+          let iconName;
+          if (route.name === 'Home') {
+            iconName = 'home-outline';
+          } else if (route.name === 'Categories') {
+            iconName = 'list-outline';
+          } else if (route.name === 'Cart') {
+            iconName = 'cart-outline';
+          } else if (route.name === 'Favorites') {
+            iconName = 'heart-outline';
+          }
+          return <Icon name={iconName} size={22} color="#fff" />;
+        },
+        tabBarActiveTintColor: colors.bg_button,
+        tabBarInactiveTintColor: '#fff',
+        tabBarStyle: { backgroundColor: colors.bg_button },
+        stackStyle: { backgroundColor: colors.bg_button }
+      })}>
+      <Tab.Screen
+        name="Home"
+        options={{
+          headerTitle: "HELLO",
+          headerStyle: { backgroundColor: colors.bg_home },
+          headerTintColor: '#fff',
+          headerRight: () => (
+            <IconButton
+              icon={<Icon name="person-outline" size={24} color="#fff" />}
+              onPress={handleSignup}
+            />
+          ),
+          tabBarStyle: { backgroundColor: '#007B82' },
+        }}
+        component={HomeScreen}
+      />
+      <Tab.Screen name="Categories" options={{
+        headerTitle: "SHOP", headerStyle: { backgroundColor: '#03A1AB' }, headerRight: () => (
+          <IconButton
+            icon={<Icon name="search-outline" size={24} color="#fff" />}
+          />
+        ), tabBarStyle: { backgroundColor: '#007B82' },
+      }} component={categories} />
+      <Tab.Screen name="Cart" options={{ headerTitle: "SHOPPING BAGE", tabBarStyle: { backgroundColor: '#007B82' }, headerStyle: { backgroundColor: '#03A1AB' }, }} component={Chart} />
+      <Tab.Screen name="Favorites" options={{ headerTitle: "FAVORITE", tabBarStyle: { backgroundColor: '#007B82' }, headerStyle: { backgroundColor: '#03A1AB' }, }} component={FavoriteScreen} />
+    </Tab.Navigator>
+  );
+};
+export default App;
 
-export default HomeScreen;
