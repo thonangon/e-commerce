@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
 import { NativeBaseProvider, Box, VStack, HStack, Image, Text, Button, Divider, IconButton, Modal } from 'native-base';
-import Icon from 'react-native-vector-icons/Ionicons';
+// import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 import { useNavigation } from '@react-navigation/native';
 import CustomModal from '../components/OptionComponent';
 
