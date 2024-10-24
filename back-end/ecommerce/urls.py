@@ -42,7 +42,7 @@ urlpatterns = [
     path('upload/',include('media.urls')),
     path('size/',include('sizes.urls')),
     path('color/',include('colors.urls')),
-    # path('product/',include('product.urls')),
+    path('product/',include('product.urls')),
     # path('cart/',include('cart.urls')),
     # path('order/',include('order.urls')),
     # path('payment/',include('payment.urls')),
