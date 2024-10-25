@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'allauth.account',  # Email login
+    # 'allauth.socialaccount',  # OAuth login
+    # 'allauth.socialaccount.providers.google',  # Google login
+    # 'allauth.socialaccount.providers.facebook',  # Facebook login
+    # 'allauth.socialaccount.providers.apple',  # Apple login
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
@@ -175,5 +180,5 @@ STATIC_URL = '/static/'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.environ.get('takeothona61@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('takeo437$')

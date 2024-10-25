@@ -43,7 +43,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-
     objects = UserManager()
 
     def __str__(self):
@@ -55,3 +54,16 @@ class User(AbstractBaseUser, PermissionsMixin):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
+
+class UserProfile(AbstractBaseUser):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    date_of_birth = models.DateTimeField(null= True,blank=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    gender = models.CharField(max_length=20, choices=[
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Prefer not to say', 'prefer not to say'),
+    ], default=('Prefer not to say'))
+    USERNAME_FIELD = 'user'
+    def __str__(self):
+        return self.user.email
