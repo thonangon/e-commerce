@@ -9,4 +9,5 @@ class ColorOnProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ColorOnProduct
-        fields = ['color', 'size']
+        fields = ['color','size']  
+    

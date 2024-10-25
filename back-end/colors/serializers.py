@@ -6,4 +6,4 @@ class ColorSerializer(serializers.ModelSerializer):
         model= Color
         fields= ['colorId','colorName']
 
-        
+    

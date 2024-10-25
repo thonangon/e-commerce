@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(max_length=255)),
                 ('heading', models.CharField(max_length=255)),
                 ('subHeading', models.CharField(max_length=255)),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='category.categories')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='category.category')),
             ],
         ),
     ]
