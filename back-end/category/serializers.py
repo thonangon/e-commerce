@@ -4,7 +4,7 @@ from .models import MainCategory, SubCategory, Category
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id','name','sub_category']
+        fields = ['id','name','sub_category','image']
 
 class SubCategorySerializer(serializers.ModelSerializer):
     categories = serializers.SerializerMethodField()
