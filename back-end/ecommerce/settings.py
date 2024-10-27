@@ -162,6 +162,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Internationalization
