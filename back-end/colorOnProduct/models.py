@@ -10,9 +10,4 @@ class ColorOnProduct(models.Model):
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
 
-    class Meta:
-        db_table = 'color_on_product'
-        unique_together = (('product', 'color', 'size'),)
-        verbose_name = 'Color on Product'
-        verbose_name_plural = 'Colors on Products'
-        
+    
