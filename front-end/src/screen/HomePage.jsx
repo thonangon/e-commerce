@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Image, TouchableOpacity, ImageBackground, View } from 'react-native';
 import { Box, Button, Divider, Modal, HStack, IconButton, ScrollView, VStack, Select, Text } from 'native-base';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -8,139 +8,108 @@ import FavoriteScreen from './FavoriteScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from "../utils/colors";
+import axios from 'axios';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [selected, setSelected] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [isModalVisible, setModalVisible] = useState(true);
+  const [categories, setCategories] = useState([]);
 
   const data = [
     { key: '1', image: require('../assets/img-home.png'), Title: 'SOCKER' },
     { key: '2', image: require('../assets/home1.png'), Title: 'RUNNING' },
     { key: '3', image: require('../assets/home3.png'), Title: 'SNEAKER' },
-    { key: '4', image: require('../assets/home4.png'), Title: 'WALKING' },
-    { key: '5', image: require('../assets/home5.png'), Title: 'BAG' },
-    { key: '6', image: require('../assets/home6.png'), Title: 'ADIDAS' },
-    { key: '7', image: require('../assets/home7.png'), Title: 'SHOESE' },
-    { key: '8', image: require('../assets/home8.png'), Title: 'JEAN' },
-    { key: '9', image: require('../assets/home9.png'), Title: 'T-SHIRT' },
+    // Additional items...
   ];
 
-  const categories = ['Soccer', 'Running', 'Sneakers', 'Walking'];
+  const fetchMainCategories = useCallback(async () => {
+    try {
+      const response = await axios.get('http://10.0.2.2:8000/category/main-categories/');
+      setCategories(response.data.results || []);
+    } catch (error) {
+      console.error("Error fetching main categories:", error);
+    }
+  }, []);
 
-  const handleCategorySelect = (category) => {
-    console.log(`${category} clicked`);
+  useEffect(() => {
+    fetchMainCategories();
+  }, [fetchMainCategories]);
+
+  const handleCategorySelect = async (itemValue) => {
+    setSelectedCategory(itemValue);
   };
 
   return (
     <Box flex={1} bg={colors.bg_home}>
       <Divider mx={4} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
-        <Box bg={colors.bg_home} pt={1} px={4} marginBottom={3}>
+        <Box pt={1} px={4}>
           <HStack mt={1} justifyContent="space-between" alignItems="center" space={2}>
             <VStack>
               <Select
-                selectedValue={selected}
-                minWidth="15"
-                height="30px"
-                accessibilityLabel="Choose Category"
-                placeholder="Men's"
-                _selectedItem={{
-                  bg: "cyan.600",
-                  endIcon: <Icon name="checkmark-outline" size={16} color="white" />
-                }}
-                onValueChange={(itemValue) => setSelected(itemValue)}
-                variant="filled"
+                selectedValue={selectedCategory}
+                minWidth="150px"
+                placeholder="Select Category"
+                onValueChange={handleCategorySelect}
                 dropdownIcon={<Icon name="chevron-down-outline" size={16} color="black" />}
+                variant="filled"
               >
-                <Select.Item label="Men's" value="Men's" />
-                <Select.Item label="Women's" value="Women's" />
-                <Select.Item label="Kids" value="Kids" />
+                {categories.length > 0 ? categories.map((category) => (
+                  <Select.Item key={category.id} label={category.name} value={category.id.toString()} />
+                )) : <Select.Item label="No categories available" value="" />}
               </Select>
             </VStack>
-
-            {/* Other Categories */}
-            {categories.map((category, index) => (
-              <Button
-                key={index}
-                py={1}
-                variant={category === 'Soccer' ? 'outline' : 'solid'}
-                bg={category === 'Soccer' ? '#00F0FF' : 'white'}
-                _text={{ color: 'black' }}
-                onPress={() => handleCategorySelect(category)}
-              >
-                {category}
-              </Button>
-            ))}
+            <HStack space={4}>
+              {categories.map((mainCategory) => (
+                <HStack key={mainCategory.id} space={2}>
+                  {mainCategory.subcategories?.map((subcategory) => (
+                    subcategory.categories?.map((category) => (
+                      <Button
+                        key={category.id}
+                        py={1}
+                        variant="outline"
+                        bg="white"
+                        _text={{ color: "black" }}
+                        onPress={() => console.log("Category selected:", category.name)}
+                      >
+                        {category.name}
+                      </Button>
+                    ))
+                  ))}
+                </HStack>
+              ))}
+            </HStack>
           </HStack>
         </Box>
       </ScrollView>
 
       <ScrollView>
-        {data.map((item, index) => (
-          <ImageBackground
-            key={index}
-            source={item.image}
-            style={{ width: "100%", height: 670, resizeMode: 'cover' }}
-          >
+        {data.map((item) => (
+          <ImageBackground key={item.key} source={item.image} style={{ width: '100%', height: 670 }}>
             <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 70 }}>
-              <Text position="absolute" top="1%" left="5%" bg="white" px={2} fontSize="sm" color={"#00C2C2"}>
+              <Text style={{ position: 'absolute', top: '1%', left: '5%', backgroundColor: 'white', padding: 4, fontSize: 16, color: '#00C2C2' }}>
                 {item.Title}
               </Text>
               <TouchableOpacity
                 style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  margin:20,
-                  width:'90%',
-                  alignItems: 'center',
-                  backgroundColor: colors.bg_button,
-                  padding: 5,
-                  borderRadius: 5
+                  flexDirection: 'row', justifyContent: 'center', margin: 20, width: '90%', alignItems: 'center',
+                  backgroundColor: colors.bg_button, padding: 10, borderRadius: 5
                 }}
                 onPress={() => navigation.navigate('CATEGORIES')}
               >
-                <View style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  borderRadius: 5,
-                  color: '#fff',
-                  
-                }} >
-                  <Text
-                    style={{
-                      color: '#fff',
-                    }}
-                  >
-                    SHOP NOW
-                  </Text>
-                  <IconButton
-                    onPress={() => setShowOptionModal(true)}
-                    icon={<Icon name="arrow-forward" size={20} color="black" />}
-                    style={{ marginLeft: 10 }}
-                  />
-                </View>
+                <Text style={{ color: '#fff' }}>SHOP NOW</Text>
+                <IconButton icon={<Icon name="arrow-forward" size={20} color="white" />} style={{ marginLeft: 10 }} />
               </TouchableOpacity>
-
             </View>
-
-
           </ImageBackground>
         ))}
-        {/* Promotional Popup Modal */}
+
         <Modal isOpen={isModalVisible} onClose={() => setModalVisible(false)}>
-          <Image
-            source={require('../assets/promotions.png')}
-            alt="Promotional Card"
-            resizeMode="cover"
-            height="200px"
-          />
+          <Image source={require('../assets/promotions.png')} alt="Promotional Card" resizeMode="cover" height="200px" />
           <Modal.CloseButton />
         </Modal>
       </ScrollView>
-
     </Box>
   );
 };
@@ -150,9 +119,9 @@ const Tab = createBottomTabNavigator();
 const App = () => {
   const navigation = useNavigation();
 
-  const handleSignup = () => {
-    navigation.navigate('CAROUSEL');
-  };
+  const handleSignup = () => navigation.navigate('CAROUSEL');
+
+
 
   return (
     <Tab.Navigator
@@ -209,5 +178,7 @@ const App = () => {
     </Tab.Navigator>
   );
 };
+
+
 
 export default App;

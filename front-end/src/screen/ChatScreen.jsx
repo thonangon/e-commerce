@@ -13,7 +13,7 @@ import {
 } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
-import CustomModal from '../components/OptionComponent'; // Import the reusable CustomModal component
+import CustomModal from '../components/OptionComponent'; 
 import ButtonClick from '../components/Button';
 import { colors } from "../utils/colors";
 const ShoppingBag = () => {
