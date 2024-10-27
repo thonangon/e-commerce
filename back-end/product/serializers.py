@@ -4,11 +4,14 @@ from media.serializers import *
 from .models import *
 from media.models import Media
 from discount.seriailizers import *
+from category.serializers import *
+
 
 class ProductSerializer(serializers.ModelSerializer):
     color_size_combinations = ColorOnProductSerializer(source='coloronproduct_set', many=True)
     images = uploadImageSerializer(many=True, read_only=True)  # For displaying product images after creation
-    discount = DiscountSerializer(read_only=True)  # For displaying discount details after creation
+    discount = DiscountSerializer(source='discount_set', many=True, read_only=True)  
+    category = CategorySerializer(read_only=True)
     class Meta:
         model = Product
         fields = ['productId', 'productName', 'description', 'heading', 'subHeading', 'category', 'color_size_combinations', 'images','discount']
@@ -34,14 +37,5 @@ class ProductSerializer(serializers.ModelSerializer):
         # Handle image uploads
         for image in images_data:
             Media.objects.create(product=product, image=image)
-
-        # Handle discount creation if present
-        discount_data = validated_data.get('discount')
-        if discount_data:
-            discount_percentage = discount_data.get('percentage')
-            if discount_percentage is not None:  # Check if percentage is provided
-                Discount.objects.create(product=product, percentage=discount_percentage)
-
-
 
         return product
