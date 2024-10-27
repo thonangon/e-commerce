@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Image, TouchableOpacity, ImageBackground, View } from 'react-native';
 import { Box, Button, Divider, Modal, HStack, IconButton, ScrollView, VStack, Select, Text } from 'native-base';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import categories from './CategoriesScreen';
 import Chart from './ChatScreen';
 import FavoriteScreen from './FavoriteScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -45,18 +46,40 @@ const HomeScreen = () => {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
         <Box pt={1} px={4}>
           <HStack mt={1} justifyContent="space-between" alignItems="center" space={2}>
-            <Select
-              selectedValue={selectedCategory}
-              minWidth="150px"
-              placeholder="Select Category"
-              onValueChange={handleCategorySelect}
-              dropdownIcon={<Icon name="chevron-down-outline" size={16} color="black" />}
-              variant="filled"
-            >
-              {categories.length > 0 ? categories.map((category) => (
-                <Select.Item key={category.id} label={category.name} value={category.id.toString()} />
-              )) : <Select.Item label="No categories available" value="" />}
-            </Select>
+            <VStack>
+              <Select
+                selectedValue={selectedCategory}
+                minWidth="150px"
+                placeholder="Select Category"
+                onValueChange={handleCategorySelect}
+                dropdownIcon={<Icon name="chevron-down-outline" size={16} color="black" />}
+                variant="filled"
+              >
+                {categories.length > 0 ? categories.map((category) => (
+                  <Select.Item key={category.id} label={category.name} value={category.id.toString()} />
+                )) : <Select.Item label="No categories available" value="" />}
+              </Select>
+            </VStack>
+            <HStack space={4}>
+              {categories.map((mainCategory) => (
+                <HStack key={mainCategory.id} space={2}>
+                  {mainCategory.subcategories?.map((subcategory) => (
+                    subcategory.categories?.map((category) => (
+                      <Button
+                        key={category.id}
+                        py={1}
+                        variant="outline"
+                        bg="white"
+                        _text={{ color: "black" }}
+                        onPress={() => console.log("Category selected:", category.name)}
+                      >
+                        {category.name}
+                      </Button>
+                    ))
+                  ))}
+                </HStack>
+              ))}
+            </HStack>
           </HStack>
         </Box>
       </ScrollView>
@@ -98,10 +121,12 @@ const App = () => {
 
   const handleSignup = () => navigation.navigate('CAROUSEL');
 
+
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
+        tabBarIcon: () => {
           let iconName;
           if (route.name === 'Home') {
             iconName = 'home-outline';
@@ -112,13 +137,12 @@ const App = () => {
           } else if (route.name === 'Favorites') {
             iconName = 'heart-outline';
           }
-          return <Icon name={iconName} size={22} color={color} />;
+          return <Icon name={iconName} size={22} color="#fff" />;
         },
         tabBarActiveTintColor: colors.bg_button,
         tabBarInactiveTintColor: '#fff',
         tabBarStyle: { backgroundColor: colors.bg_button },
-      })}
-    >
+      })}>
       <Tab.Screen
         name="Home"
         options={{
@@ -134,12 +158,27 @@ const App = () => {
         }}
         component={HomeScreen}
       />
-      <Tab.Screen name="Categories" component={Chart} />
-      <Tab.Screen name="Cart" component={FavoriteScreen} />
-      <Tab.Screen name="Favorites" component={FavoriteScreen} /> {/* Add Favorites screen */}
+      <Tab.Screen name="Categories" options={{
+        headerTitle: "SHOP",
+        headerStyle: { backgroundColor: '#03A1AB' },
+        headerRight: () => (
+          <IconButton
+            icon={<Icon name="search-outline" size={24} color="#fff" />}
+          />
+        ),
+      }} component={categories} />
+      <Tab.Screen name="Cart" options={{
+        headerTitle: "SHOPPING BAG",
+        headerStyle: { backgroundColor: '#03A1AB' },
+      }} component={Chart} />
+      <Tab.Screen name="Favorites" options={{
+        headerTitle: "FAVORITE",
+        headerStyle: { backgroundColor: '#03A1AB' },
+      }} component={FavoriteScreen} />
     </Tab.Navigator>
-
   );
 };
+
+
 
 export default App;
