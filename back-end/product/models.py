@@ -10,7 +10,7 @@ class Product(models.Model):
     heading = models.CharField(max_length=255)
     subHeading = models.CharField(max_length=255)
     category = models.ForeignKey('category.Category',on_delete=models.CASCADE)
-
+    
     def __str__(self):
         return self.productName
     

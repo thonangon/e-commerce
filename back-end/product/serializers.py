@@ -3,14 +3,18 @@ from colorOnProduct.seriaizers import *
 from media.serializers import *
 from .models import *
 from media.models import Media
+from discount.seriailizers import *
+from category.serializers import *
+
 
 class ProductSerializer(serializers.ModelSerializer):
     color_size_combinations = ColorOnProductSerializer(source='coloronproduct_set', many=True)
     images = uploadImageSerializer(many=True, read_only=True)  # For displaying product images after creation
-
+    discount = DiscountSerializer(source='discount_set', many=True, read_only=True)  
+    category = CategorySerializer(read_only=True)
     class Meta:
         model = Product
-        fields = ['productId', 'productName', 'description', 'heading', 'subHeading', 'category', 'color_size_combinations', 'images']
+        fields = ['productId', 'productName', 'description', 'heading', 'subHeading', 'category', 'color_size_combinations', 'images','discount']
 
     def create(self, validated_data):
         color_size_combinations_data = validated_data.pop('coloronproduct_set', [])
