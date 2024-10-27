@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'sizes',
     'media',
     'colorOnProduct',
+    'order',
+    'orderDetail',
     
 ]
 
