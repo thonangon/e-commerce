@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status, views, permissions
-from .serializers import RegisterSerializer, SetNewPasswordSerializer, ResetPasswordEmailRequestSerializer, EmailVerificationSerializer, LoginSerializer, LogoutSerializer
+from .serializers import *
+from .models import *
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
@@ -20,6 +21,8 @@ from django.urls import reverse
 from .utils import Util
 from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import get_user_model
 import os
 
 
@@ -43,25 +46,58 @@ class RegisterView(generics.GenericAPIView):
         Util.send_email(data)
         return Response({'user': serializer.data, 'tokens': {'refresh': str(refresh), 'access': str(refresh.access_token)}}, status=status.HTTP_201_CREATED)
 
+class UserProfileView(views.APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        try:
+            profile = UserProfile.objects.get(user=request.user)
+            serializer = UserProfileSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request):
+        try:
+            profile = UserProfile.objects.get(user=request.user)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UpdateProfileSerializer(profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class VerifyEmail(views.APIView):
     serializer_class = EmailVerificationSerializer
     token_param_config = openapi.Parameter(
         'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
+        # Retrieve the token from the query parameters
         token = request.GET.get('token')
+
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY)
+            # Decode the JWT token using the secret key
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            
+            # Retrieve the user based on the ID in the token payload
             user = User.objects.get(id=payload['user_id'])
+
+            # If the user is not verified, mark them as verified and save
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
-        except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
-        except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
+            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Activation link has expired'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except jwt.exceptions.DecodeError:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        
 class LoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     def post(self, request):

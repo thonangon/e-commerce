@@ -16,6 +16,7 @@ class Migration(migrations.Migration):
             name='sub_category',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='category', to='category.subcategory'),
         ),
+        
         migrations.AlterField(
             model_name='subcategory',
             name='main_category',
