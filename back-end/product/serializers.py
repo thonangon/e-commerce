@@ -34,7 +34,6 @@ class ProductSerializer(serializers.ModelSerializer):
             size_instance, created = Size.objects.get_or_create(size_numeric=size_numeric, defaults={'price': price})
             ColorOnProduct.objects.create(product=product, color=color_instance, size=size_instance)
 
-        # Handle image uploads
         for image in images_data:
             Media.objects.create(product=product, image=image)
 
