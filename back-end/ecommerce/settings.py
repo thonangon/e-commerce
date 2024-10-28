@@ -37,11 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'allauth.account',  # Email login
-    # 'allauth.socialaccount',  # OAuth login
-    # 'allauth.socialaccount.providers.google',  # Google login
-    # 'allauth.socialaccount.providers.facebook',  # Facebook login
-    # 'allauth.socialaccount.providers.apple',  # Apple login
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
@@ -55,7 +50,8 @@ INSTALLED_APPS = [
     'colorOnProduct',
     'order',
     'orderDetail',
-    'discount'
+    'discount',
+    'payment'
     
 ]
 
@@ -185,3 +181,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('takeothona61@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('takeo437$')
+
+# Stripe================================
+
+STRIPE_PUBLIC_KEY = os.environ.get('pk_test_51PZ1M92KMJfWGuxDbOviEzE7eldlNfD2vLtPaweyyJPTAJEmEy7APiGipQYtve6F0MNP4iJTAxK15MAS9R25DRyG00GuyPPGZh')
+STRIPE_SECRET_KEY = os.environ.get('sk_test_51PZ1M92KMJfWGuxDDZfS9cMw1wyXKoJvL2pudltJZUDIzkalQq9wr4KHHD4xcf8XayDjcboNWmK62omv4KCKQcYG00WsyEcb6c')
+# STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
+DEFAULT_CURRENCY = 'USD'

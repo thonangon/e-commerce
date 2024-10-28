@@ -47,8 +47,8 @@ urlpatterns = [
     path('product/',include('product.urls')),
     path('oder_detail/',include('orderDetail.urls')),
     path('order/',include('order.urls')),
-    path('discount/',include('discount.urls'))
-    # path('payment/',include('payment.urls')),
+    path('discount/',include('discount.urls')),
+    path('pay_order/',include('payment.urls')),
 
 ]
 if settings.DEBUG:
