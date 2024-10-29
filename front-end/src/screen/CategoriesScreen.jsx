@@ -30,8 +30,8 @@ const HomeScreen = () => {
   ];
   const handleShoes = (category) => {
     navigation.navigate('PRODUCTSHOES');
-
-  }
+  
+}
   return (
     <ScrollView bg="#fff">
       <Text ml={3}>BACK TO SCHOOL</Text>
