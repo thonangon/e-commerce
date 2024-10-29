@@ -1,26 +1,38 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Image, TouchableOpacity, ImageBackground, View} from 'react-native';
-import { Box, Button, Divider, Modal, HStack, IconButton, ScrollView, VStack, Select, Text } from 'native-base';
+import {
+  Image, TouchableOpacity, ImageBackground, View, ScrollView as RNScrollView,
+} from 'react-native';
+import {
+  Box, Button, Divider, Modal, HStack, IconButton, VStack, Select, Text,
+} from 'native-base';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import categories from './CategoriesScreen';
-import Chart from './ChatScreen';
-import FavoriteScreen from './FavoriteScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { colors } from "../utils/colors";
 import axios from 'axios';
+import categoriesData from './CategoriesScreen';
+import Chart from './ChatScreen';
+import FavoriteScreen from './FavoriteScreen';
+import { colors } from "../utils/colors";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isModalVisible, setModalVisible] = useState(true);
   const [categories, setCategories] = useState([]);
-  const scrollViewRef = useRef(null); 
+  const scrollViewRef = useRef(null);
+  const categoryOffsets = useRef({});
+  const [selectedMainCategory, setSelectedMainCategory] = useState(null);
 
   const fetchMainCategories = useCallback(async () => {
     try {
       const response = await axios.get('http://10.0.2.2:8000/category/main-categories/');
-      setCategories(response.data.results || []);
+      const categoriesData = response.data.results || [];
+      setCategories(categoriesData);
+
+      const menCategory = categoriesData.find((category) => category.name === "Men");
+      if (menCategory) {
+        setSelectedMainCategory(menCategory.id.toString());
+      }
     } catch (error) {
       console.error("Error fetching main categories:", error);
     }
@@ -30,140 +42,103 @@ const HomeScreen = () => {
     fetchMainCategories();
   }, [fetchMainCategories]);
 
-  const handleCategorySelect = (itemValue) => {
-    setSelectedCategory(itemValue);
-  };
+  const setCategoryOffset = useCallback((categoryId, event) => {
+    const offset = event.nativeEvent.layout.y;
+    categoryOffsets.current[categoryId] = offset;
+  }, []);
 
-  const scrollToCategory = (categoryName) => {
-    if (scrollViewRef.current) {
-      const categoryIndex = categories.filter(mainCategory =>
-        mainCategory.subcategories.some(subcategory =>
-          subcategory.categories.some(category => category.name === categoryName)
-        )
-      );
-
-      if (categoryIndex !== -1) {
-        const categoryPosition = categoryIndex * 670;
-        scrollViewRef.current.scrollTo({ y: categoryPosition, animated: true });
-      }
+  const scrollToCategory = (categoryId) => {
+    const offset = categoryOffsets.current[categoryId];
+    if (offset !== undefined && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: offset, animated: true });
     }
   };
 
   return (
     <Box flex={1} bg={colors.bg_home}>
       <Divider mx={4} />
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
-        <Box pt={1} px={4} py={4}>
+      <RNScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScrollContainer}>
+        <Box px={4} py={4}>
           <HStack mt={1} justifyContent="space-between" alignItems="center" space={2}>
             <VStack>
               <Select
-                selectedValue={selectedCategory}
-                placeholder="Select Category"
-                onValueChange={handleCategorySelect}
+                selectedValue={selectedMainCategory}
+                placeholder="Select Main Category"
+                onValueChange={setSelectedMainCategory}
                 dropdownIcon={<Icon name="chevron-down-outline" size={16} color="black" />}
                 variant="filled"
-                py={0.5}
-                width={20}
+                width={150}
+                py={1}
               >
-                {categories.length > 0 ? categories.map((category) => (
-                  <Select.Item key={category.id} label={category.name} value={category.id.toString()} />
-                )) : <Select.Item label="No categories available" value="" />}
+                {categories.length > 0
+                  ? categories.map((mainCategory) => (
+                    <Select.Item key={mainCategory.id} label={mainCategory.name} value={mainCategory.id.toString()} />
+                  ))
+                  : <Select.Item label="No categories available" value="" />}
               </Select>
             </VStack>
 
             <HStack space={4}>
-              {categories.map((mainCategory) => (
-                <HStack key={mainCategory.id} space={2}>
-                  {mainCategory.subcategories?.map((subcategory) => (
+              {selectedMainCategory &&
+                categories
+                  .find((cat) => cat.id === parseInt(selectedMainCategory))
+                  ?.subcategories?.flatMap((subcategory) =>
                     subcategory.categories?.map((category) => (
                       <Button
                         key={category.id}
                         py={1}
                         variant="outline"
-                        bg={category.name === "SOCCER" ? 'black.100' : 'white'}
-                        _text={{ color: category.name === "SOCCER" ? "white" : "black" }}
+                        bg={category.id === selectedCategory ? 'black.100' : 'white'}
+                        _text={{ color: category.id === selectedCategory ? "white" : "black" }}
                         onPress={() => {
-                          scrollToCategory(category.name); 
-                          console.log("Category selected:", category.name);
+                          setSelectedCategory(category.id);
+                          scrollToCategory(category.id);
                         }}
                       >
                         {category.name}
                       </Button>
                     ))
-                  ))}
-                </HStack>
-              ))}
+                  )}
             </HStack>
           </HStack>
         </Box>
-      </ScrollView>
+      </RNScrollView>
 
-      <ScrollView ref={scrollViewRef}>
+      <RNScrollView ref={scrollViewRef}>
         {categories.map((mainCategory) => (
-          <View key={mainCategory.id}>
-            {mainCategory.subcategories?.map((subcategory) => (
-              <View key={subcategory.id}>
-                {subcategory.categories?.map((category) => {
-                  const baseURL = 'http://10.0.2.2:8000';
-                  const imageUrl = category.image ? `${baseURL}${category.image}` : null;
-
-                  return (
-                    <ImageBackground
-                      key={category.id}
-                      source={imageUrl ? { uri: imageUrl } : require('../assets/fav2.png')}
-                      style={{ width: '100%', height: 670 }}
-                    >
-                      <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 70 }}>
-                        <Text
-                          style={{
-                            position: 'absolute',
-                            top: '1%',
-                            left: '5%',
-                            backgroundColor: 'white',
-                            padding: 4,
-                            fontSize: 16,
-                            color: '#00C2C2',
-                          }}
-                        >
-                          {category.name}
-                        </Text>
-                        <TouchableOpacity
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            margin: 20,
-                            width: '90%',
-                            alignItems: 'center',
-                            backgroundColor: colors.bg_button,
-                            padding: 10,
-                            borderRadius: 5
-                          }}
-                          onPress={() => navigation.navigate('CATEGORIES')}
-                        >
-                          <Text style={{ color: '#fff' }}>SHOP NOW</Text>
-                          <IconButton icon={<Icon name="arrow-forward" size={20} color="white" />} style={{ marginLeft: 10 }} />
-                        </TouchableOpacity>
-                      </View>
-                    </ImageBackground>
-                  );
-                })}
-              </View>
-            ))}
-          </View>
+          mainCategory.subcategories?.map((subcategory) => (
+            subcategory.categories?.map((category) => {
+              const imageUrl = category.image ? `http://10.0.2.2:8000${category.image}` : null;
+              return (
+                <View key={category.id} onLayout={(event) => setCategoryOffset(category.id, event)}>
+                  <ImageBackground source={imageUrl ? { uri: imageUrl } : require('../assets/fav2.png')} style={styles.imageBackground}>
+                    <View style={styles.textContainer}>
+                      <Text style={styles.categoryText}>{category.name}</Text>
+                      <TouchableOpacity
+                        style={styles.shopNowButton}
+                        onPress={() => navigation.navigate('CATEGORIES')}
+                      >
+                        <Text style={styles.shopNowButtonText}>SHOP NOW</Text>
+                        <IconButton icon={<Icon name="arrow-forward" size={20} color="white" />} style={{ marginLeft: 10 }} />
+                      </TouchableOpacity>
+                    </View>
+                  </ImageBackground>
+                </View>
+              );
+            })
+          ))
         ))}
 
         <Modal isOpen={isModalVisible} onClose={() => setModalVisible(false)}>
           <Image source={require('../assets/promotions.png')} alt="Promotional Card" resizeMode="cover" height="200px" />
           <Modal.CloseButton />
         </Modal>
-      </ScrollView>
+      </RNScrollView>
     </Box>
   );
 };
 
 const Tab = createBottomTabNavigator();
-
 const App = () => {
   const navigation = useNavigation();
 
@@ -195,7 +170,8 @@ const App = () => {
         tabBarActiveTintColor: colors.bg_button,
         tabBarInactiveTintColor: '#fff',
         tabBarStyle: { backgroundColor: colors.bg_button },
-      })}>
+      })}
+    >
       <Tab.Screen
         name="Home"
         options={{
@@ -211,25 +187,38 @@ const App = () => {
         }}
         component={HomeScreen}
       />
-      <Tab.Screen name="Categories" options={{
-        headerTitle: "SHOP",
-        headerStyle: { backgroundColor: '#03A1AB' },
-        headerRight: () => (
-          <IconButton
-            icon={<Icon name="search-outline" size={24} color="#fff" />}
-          />
-        ),
-      }} component={categories} />
-      <Tab.Screen name="Cart" options={{
-        headerTitle: "SHOPPING BAG",
-        headerStyle: { backgroundColor: '#03A1AB' },
-      }} component={Chart} />
-      <Tab.Screen name="Favorites" options={{
-        headerTitle: "FAVORITE",
-        headerStyle: { backgroundColor: '#03A1AB' },
-      }} component={FavoriteScreen} />
+      <Tab.Screen name="Categories" component={categoriesData} options={{ headerTitle: "SHOP", headerStyle: styles.headerStyle }} />
+      <Tab.Screen name="Cart" component={Chart} options={{ headerTitle: "SHOPPING BAG", headerStyle: styles.headerStyle }} />
+      <Tab.Screen name="Favorites" component={FavoriteScreen} options={{ headerTitle: "FAVORITE", headerStyle: styles.headerStyle }} />
     </Tab.Navigator>
   );
+};
+
+const styles = {
+  horizontalScrollContainer: { paddingVertical: 8 },
+  imageBackground: { width: '100%', height: 670 },
+  textContainer: { flex: 1, justifyContent: 'flex-end', paddingBottom: 70 },
+  categoryText: {
+    position: 'absolute',
+    top: '1%',
+    left: '5%',
+    backgroundColor: 'white',
+    padding: 4,
+    fontSize: 16,
+    color: '#00C2C2',
+  },
+  shopNowButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    margin: 20,
+    width: '90%',
+    alignItems: 'center',
+    backgroundColor: colors.bg_button,
+    padding: 10,
+    borderRadius: 5,
+  },
+  shopNowButtonText: { color: '#fff' },
+  headerStyle: { backgroundColor: '#03A1AB' },
 };
 
 export default App;
