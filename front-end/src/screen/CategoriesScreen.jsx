@@ -4,12 +4,11 @@ import { Box, Text, VStack, HStack, Heading, Button, Divider, IconButton } from 
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Modal } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import { useRoute } from '@react-navigation/native';
 
 const ProductCard = ({ image, name, price, code }) => (
   <Box bg="white" rounded="md" shadow={2} width={250}>
     <Image source={image} alt={name} style={{ height: 350, width: '100%' }} />
-    <Box position="absolute" top={220} left={3} fontSize="sm">
+    <Box  position="absolute" top={220} left={3}  fontSize="sm">
       <Text fontSize="md" bg="#fff" color="gray.400">CODE: {code}</Text>
       <Text fontSize="md" bg="#fff" mt={1} mb={4}>${price}</Text>
       <Text fontSize="sm" bold>{name}</Text>
@@ -20,13 +19,16 @@ const ProductCard = ({ image, name, price, code }) => (
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const route = useRoute();
-  const { selectedCategory } = route.params || { selectedCategory: [] };
+  const categories = [
+    { name: 'SHOES', icon: 'footsteps-outline' }, 
+    { name: 'CLOTHING', icon: 'shirt-outline' }, 
+    { name: 'ACCESSORIES', icon: 'glasses-outline' }, 
+  ];
   const products = [
     { name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS', price: 160, code: 'SAVINGS', image: require('../assets/running1.png') },
     { name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS', price: 160, code: 'SAVINGS', image: require('../assets/running2.png') },
   ];
-  const handleShoes = (MainCategory) => {
+  const handleShoes = (category) => {
     navigation.navigate('PRODUCTSHOES');
 
   }
@@ -47,20 +49,18 @@ const HomeScreen = () => {
         </Text>
       </Box>
       <VStack space={4} mt={5}>
-        {Array.isArray(selectedCategory) && selectedCategory.length > 0 ? (
-          selectedCategory.map((category, idx) => (
-            <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1}>
-              <HStack alignItems="center">
-                <IconButton icon={<Icon name={category.icon} size={15} color="black" />} />
-                <Text ml={2}>{category.name}</Text>
-              </HStack>
-              <Icon name="arrow-forward" size={24} color="black" onPress={handleShoes} />
+        {categories.map((category, idx) => (
+          <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1} >
+            <HStack alignItems="center">
+              <IconButton
+                icon={<Icon name={category.icon} size={15} color="black" />}
+                />
+              <Text ml={2}>{category.name}</Text>
             </HStack>
-          ))
-        ) : (
-          <Text>No categories available.</Text>
-        )}
-        <Divider />
+            <Icon name="arrow-forward" size={24} color="black" onPress={handleShoes} />
+          </HStack>
+        ))}
+        <Divider></Divider>
       </VStack>
       {/* Product Sections */}
       <VStack mt={8} px={7}>
