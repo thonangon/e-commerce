@@ -9,7 +9,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-
 import categoriesData from './CategoriesScreen';
 import Chart from './ChatScreen';
 import FavoriteScreen from './FavoriteScreen';
@@ -27,7 +26,13 @@ const HomeScreen = () => {
   const fetchMainCategories = useCallback(async () => {
     try {
       const response = await axios.get('http://10.0.2.2:8000/category/main-categories/');
-      setCategories(response.data.results || []);
+      const categoriesData = response.data.results || [];
+      setCategories(categoriesData);
+
+      const menCategory = categoriesData.find((category) => category.name === "Men");
+      if (menCategory) {
+        setSelectedMainCategory(menCategory.id.toString());
+      }
     } catch (error) {
       console.error("Error fetching main categories:", error);
     }
@@ -134,7 +139,6 @@ const HomeScreen = () => {
 };
 
 const Tab = createBottomTabNavigator();
-
 const App = () => {
   const navigation = useNavigation();
 
@@ -216,4 +220,5 @@ const styles = {
   shopNowButtonText: { color: '#fff' },
   headerStyle: { backgroundColor: '#03A1AB' },
 };
+
 export default App;
