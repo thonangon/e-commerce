@@ -116,7 +116,7 @@ const HomeScreen = () => {
                       <Text style={styles.categoryText}>{category.name}</Text>
                       <TouchableOpacity
                         style={styles.shopNowButton}
-                        onPress={() => navigation.navigate('Categories', { mainCategoryId: selectedMainCategory, categories })
+                        onPress={() => navigation.navigate('Categories', { mainCategoryId: selectedMainCategory, subcategory })
                         }
                       >
                         <Text style={styles.shopNowButtonText}>SHOP NOW</Text>
