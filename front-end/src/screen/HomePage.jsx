@@ -9,7 +9,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import categoriesData from './CategoriesScreen';
+import Categories from './CategoriesScreen';
 import Chart from './ChatScreen';
 import FavoriteScreen from './FavoriteScreen';
 import { colors } from "../utils/colors";
@@ -116,7 +116,8 @@ const HomeScreen = () => {
                       <Text style={styles.categoryText}>{category.name}</Text>
                       <TouchableOpacity
                         style={styles.shopNowButton}
-                        onPress={() => navigation.navigate('CATEGORIES')}
+                        onPress={() => navigation.navigate('Categories', { mainCategoryId: selectedMainCategory, categories })
+                        }
                       >
                         <Text style={styles.shopNowButtonText}>SHOP NOW</Text>
                         <IconButton icon={<Icon name="arrow-forward" size={20} color="white" />} style={{ marginLeft: 10 }} />
@@ -187,7 +188,12 @@ const App = () => {
         }}
         component={HomeScreen}
       />
-      <Tab.Screen name="Categories" component={categoriesData} options={{ headerTitle: "SHOP", headerStyle: styles.headerStyle }} />
+      {/* <Tab.Screen name="Categories" component={categoriesData} options={{ headerTitle: "SHOP", headerStyle: styles.headerStyle }} /> */}
+      <Tab.Screen
+        name="Categories"
+        component={Categories}
+        options={{ headerTitle: "SHOP", headerStyle: styles.headerStyle }}
+      />
       <Tab.Screen name="Cart" component={Chart} options={{ headerTitle: "SHOPPING BAG", headerStyle: styles.headerStyle }} />
       <Tab.Screen name="Favorites" component={FavoriteScreen} options={{ headerTitle: "FAVORITE", headerStyle: styles.headerStyle }} />
     </Tab.Navigator>
