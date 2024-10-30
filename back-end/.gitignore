@@ -4,3 +4,18 @@ __pycache__
 __pycache__/
 *.py[cod]
 
+
+# Python
+*.pyc
+__pycache__/
+
+# Django
+db.sqlite3
+*.log
+
+# Environment variables
+.env
+
+# IDEs
+.vscode/
+.idea/

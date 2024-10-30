@@ -3,8 +3,9 @@ import { ScrollView as RNScrollView, Image as RNImage } from 'react-native';
 import { Box, Text, VStack, HStack, IconButton, Image, ScrollView, } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { FlatGrid } from 'react-native-super-grid';
+// import { FlatGrid } from 'react-native-super-grid';
 import colors from '../utils/colors';
+
 const ProductCard = ({ image, name, price, code }) => (
     <Box bg="white" rounded="md" shadow={2} width={200} marginTop={1} position="relative">
         <Image source={image} alt={name} style={{ height: 350, width: '100%' }} />

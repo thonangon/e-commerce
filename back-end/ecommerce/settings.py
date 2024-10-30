@@ -27,7 +27,9 @@ SECRET_KEY = '@6p-h7#oy4unyb4+(@i&3eq(knbkvjkeyv&@*8+a%f45b@mfm1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1']
+# ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '10.0.2.2', '192.168.1.42']
+
 AUTH_USER_MODEL = 'authentication.User'
 # Application definition
 INSTALLED_APPS = [
@@ -78,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'ecommerce.urls'
@@ -104,7 +107,7 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "https://relaxed-curie-e9a516.netlify.app",
-    "http://127.0.0.1:8080"
+    "http://localhost:8080"
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [
@@ -118,12 +121,13 @@ CORS_ORIGIN_REGEX_WHITELIST = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shop_db',     
-        'USER': 'thona',     
+        'NAME': 'shop_db',
+        'USER': 'thona',
         'PASSWORD': 'djpassword',
-        'HOST': 'localhost',        
-        'PORT': '5432',             
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
+    
 }
 
 
@@ -159,6 +163,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Internationalization

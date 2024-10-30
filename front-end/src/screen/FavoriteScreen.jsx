@@ -8,8 +8,7 @@ import CustomModal from '../components/OptionComponent';
 const ShoppingBag = () => {
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false);  
-  const [showOptionModal, setShowOptionModal] = useState(false); 
-
+  const [showOptionModal, setShowOptionModal] = useState(false);  
   const handleAddress = () => {
     navigation.navigate('ADDRESS');
   };
