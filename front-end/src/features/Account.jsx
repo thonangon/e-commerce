@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-const { width } = Dimensions.get('window');
+import { API_URL } from '../config/index';
+import axios from 'axios';
 
+const { width } = Dimensions.get('window');
 const MyAccountScreen = () => {
   const navigation = useNavigation();
   const [firstName, setFirstName] = useState('');
@@ -13,6 +15,27 @@ const MyAccountScreen = () => {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
+  const [error, setError] = useState('');
+
+  const account = async() => {
+    try {
+      const response = await axios.get(`${API_URL}/account`);
+      const { data } = response;
+      setFirstName(data.firstName);
+      setLastName(data.lastName);
+      setDob(data.dob);
+      setEmail(data.email);
+      setPhone(data.phone);
+      setGender(data.gender);
+      if (response.status === 201){
+        console.log(response.data);
+      }
+    }catch(error){
+      if(error.response){
+        setError(error.response.data.message || 'failed to send')
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>

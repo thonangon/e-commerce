@@ -7,16 +7,46 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; 
+import Icon from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
+// import { useDispatch } from 'react-redux';
+// import { setUserInfo } from '../store/useSlice';
+import { API_URL } from '../config/index';
 
-const LoginScreen = ({ navigation }) => { // Destructure navigation prop correctly
+const LoginScreen = ({ navigation }) => { 
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(''); // State to hold error messages
 
-  // Toggle password visibility
+  // const dispatch = useDispatch();
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const userRegistration = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/register/`, {
+        username,
+        email,
+        password,
+      });
+      
+      if (response.status === 201) { // assuming a successful registration
+        // dispatch(setUserInfo(response.data.user));
+        console.log(response.data.user.username); // Accessing nested data
+        navigation.navigate("ACCOUNT"); // navigate after successful registration
+      }
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.message || 'Registration failed.'); // Display server error message
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -30,7 +60,19 @@ const LoginScreen = ({ navigation }) => { // Destructure navigation prop correct
       </View>
       <Text style={styles.subtitle}>Let's check if you have an account...</Text>
 
-      {/* Email input */}
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>USERNAME</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="your name"
+          placeholderTextColor="#aaa"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+        />
+      </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>EMAIL</Text>
         <TextInput
@@ -43,8 +85,6 @@ const LoginScreen = ({ navigation }) => { // Destructure navigation prop correct
           autoCapitalize="none"
         />
       </View>
-
-      {/* Password input */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>PASSWORD</Text>
         <View style={styles.passwordContainer}>
@@ -57,7 +97,6 @@ const LoginScreen = ({ navigation }) => { // Destructure navigation prop correct
             secureTextEntry={!showPassword}
             autoCapitalize="none"
           />
-          {/* Eye icon for showing/hiding password */}
           <TouchableOpacity onPress={togglePasswordVisibility}>
             <Icon
               name={showPassword ? 'eye-off' : 'eye'}
@@ -68,11 +107,7 @@ const LoginScreen = ({ navigation }) => { // Destructure navigation prop correct
         </View>
       </View>
       
-      {/* Register button */}
-      <TouchableOpacity 
-        style={styles.shopNowButton} 
-        onPress={() => navigation.navigate("ACCOUNT")} // Ensure navigation works
-      >
+      <TouchableOpacity style={styles.shopNowButton} onPress={userRegistration}>
         <Text style={styles.shopNowText}>REGISTER</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -92,7 +127,6 @@ const styles = StyleSheet.create({
     left: -8,
     flexDirection: 'row',
     justifyContent:'space-between',
-    
   },
   title: {
     fontSize: 24,
@@ -141,6 +175,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 20,
+    textAlign: 'center',
   },
 });
 

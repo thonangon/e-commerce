@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Image, TouchableOpacity, ImageBackground, View, ScrollView as RNScrollView,
+  TextBase,
 } from 'react-native';
 import {
   Box, Button, Divider, Modal, HStack, IconButton, VStack, Select, Text,
@@ -56,10 +57,11 @@ const HomeScreen = () => {
 
   return (
     <Box flex={1} bg={colors.bg_home}>
-      <Divider mx={4} />
+      <Divider mx={1}  />
       <RNScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScrollContainer}>
-        <Box px={4} py={4}>
-          <HStack mt={1} justifyContent="space-between" alignItems="center" space={2}>
+        <Box px={2} py={0}>
+          
+          <HStack mt={1} justifyContent="space-between" alignItems="center" space={1}>
             <VStack>
               <Select
                 selectedValue={selectedMainCategory}
@@ -67,7 +69,6 @@ const HomeScreen = () => {
                 onValueChange={setSelectedMainCategory}
                 dropdownIcon={<Icon name="chevron-down-outline" size={16} color="black" />}
                 variant="filled"
-                width={150}
                 py={1}
               >
                 {categories.length > 0
@@ -78,7 +79,7 @@ const HomeScreen = () => {
               </Select>
             </VStack>
 
-            <HStack space={4}>
+            <HStack space={1}>
               {selectedMainCategory &&
                 categories
                   .find((cat) => cat.id === parseInt(selectedMainCategory))
