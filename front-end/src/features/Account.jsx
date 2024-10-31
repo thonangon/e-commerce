@@ -1,18 +1,54 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { API_URL } from '../config/index';
+import axios from 'axios';
+
 const { width } = Dimensions.get('window');
 
 const MyAccountScreen = () => {
   const navigation = useNavigation();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const route = useRoute();
+  const { username, email, password } = route.params || {}; 
+  const [firstName, setFirstName] = useState(username || ''); 
+  const [lastName, setLastName] = useState(''); 
   const [dob, setDob] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
+  const [error, setError] = useState('');
+
+  const account = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/profile`, {
+        username,
+        email,
+        password,
+        first_name: firstName,
+        last_name: lastName,
+        phone,
+        gender,
+        
+      });
+      const { data } = response;
+      setFirstName(data.firstName || firstName);
+      setLastName(data.lastName);
+      setDob(data.dob);
+      setEmail(data.email);
+      setPhone(data.phone);
+      setGender(data.gender);
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.message || 'Failed to fetch account data.');
+      } else {
+        setError('An error occurred while fetching account data.');
+      }
+    }
+  };
+
+  useEffect(() => {
+    account();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -46,8 +82,8 @@ const MyAccountScreen = () => {
         style={styles.input}
         placeholder="Email"
         value={email}
-        onChangeText={setEmail}
         keyboardType="email-address"
+        editable={false} 
       />
 
       <View style={styles.passwordRow}>
@@ -55,7 +91,6 @@ const MyAccountScreen = () => {
           style={[styles.input, styles.passwordInput]}
           placeholder="Password"
           value={password}
-          onChangeText={setPassword}
           secureTextEntry={true}
         />
         <TouchableOpacity style={styles.editButton}>
@@ -100,9 +135,10 @@ const MyAccountScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.saveButton} onPress={() => navigation.navigate("CHANGEPASSWORD")}>
+      <TouchableOpacity style={styles.saveButton} onPress={() => navigation.navigate("HOMEPAGE")}>
         <Text style={styles.saveButtonText}>SAVE</Text>
       </TouchableOpacity>
+      {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
     </View>
   );
 };
@@ -150,7 +186,6 @@ const styles = StyleSheet.create({
   },
   editButton: {
     padding: 10,
-    // Add styling for the edit icon here
   },
   genderContainer: {
     flexDirection: 'row',
