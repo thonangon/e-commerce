@@ -12,8 +12,9 @@ import axios from 'axios';
 // import { useDispatch } from 'react-redux';
 // import { setUserInfo } from '../store/useSlice';
 import { API_URL } from '../config/index';
-
+import {useAuth} from '../store/redux'
 const LoginScreen = ({ navigation }) => { 
+  const { register } = useAuth();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,8 +37,12 @@ const LoginScreen = ({ navigation }) => {
       
       if (response.status === 201) { // assuming a successful registration
         // dispatch(setUserInfo(response.data.user));
+        register({
+          accountUser: {  username, email },
+          tokenUser: response.tokens,
+        });
         console.log(response.data.user.username); // Accessing nested data
-        navigation.navigate("ACCOUNT"); // navigate after successful registration
+        navigation.navigate("ACCOUNT",{username,email,password}); // navigate after successful registration
       }
     } catch (error) {
       if (error.response) {

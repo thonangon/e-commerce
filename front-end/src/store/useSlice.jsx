@@ -1,24 +1,39 @@
-// src/store/userSlice.js
 import { createSlice } from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const userSlice = createSlice({
-  name: 'user',
-  initialState: {
-    userInfo: null,
-    isAuthenticated: false,
-  },
+const initialState = {
+  accountUser: null,
+  userId: null,
+  tokenUser: null,
+};
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
   reducers: {
-    setUserInfo: (state, action) => {
-      state.userInfo = action.payload;
-      state.isAuthenticated = true;
+    setUser(state, action) {
+      const { accountUser, tokenUser } = action.payload;
+      state.accountUser = accountUser;
+      state.userId = accountUser ? accountUser.id : null;
+      state.tokenUser = tokenUser;
+
+      AsyncStorage.setItem("userAccount", JSON.stringify(accountUser));
+      AsyncStorage.setItem("id", accountUser?.id.toString());
+      AsyncStorage.setItem("tokenUser", tokenUser);
     },
-    logoutUser: (state) => {
-      state.userInfo = null;
-      state.isAuthenticated = false;
+    clearUser(state) {
+      state.accountUser = null;
+      state.userId = null;
+      state.tokenUser = null;
+      AsyncStorage.clear();
+    },
+    loadUser(state, action) {
+      const { accountUser, userId, tokenUser } = action.payload;
+      state.accountUser = accountUser;
+      state.userId = userId;
+      state.tokenUser = tokenUser;
     },
   },
 });
 
-export const { setUserInfo, logoutUser } = userSlice.actions;
-export default userSlice.reducer;
-
+export const { setUser, clearUser, loadUser } = authSlice.actions;
+export default authSlice.reducer;
