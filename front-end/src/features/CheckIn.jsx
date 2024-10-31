@@ -15,7 +15,7 @@ import { API_URL } from '../config/index';
 import {useAuth} from '../store/redux'
 const LoginScreen = ({ navigation }) => { 
   const { register } = useAuth();
-  const [username, setUsername] = useState('');
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +30,6 @@ const LoginScreen = ({ navigation }) => {
   const userRegistration = async () => {
     try {
       const response = await axios.post(`${API_URL}/auth/register/`, {
-        username,
         email,
         password,
       });
@@ -38,11 +37,11 @@ const LoginScreen = ({ navigation }) => {
       if (response.status === 201) { // assuming a successful registration
         // dispatch(setUserInfo(response.data.user));
         register({
-          accountUser: {  username, email },
+          accountUser: {   email },
           tokenUser: response.tokens,
         });
-        console.log(response.data.user.username); // Accessing nested data
-        navigation.navigate("ACCOUNT",{username,email,password}); // navigate after successful registration
+        console.log(response.data.user.email); // Accessing nested data
+        navigation.navigate("ACCOUNT",{email,password}); // navigate after successful registration
       }
     } catch (error) {
       if (error.response) {
@@ -67,17 +66,6 @@ const LoginScreen = ({ navigation }) => {
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>USERNAME</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="your name"
-          placeholderTextColor="#aaa"
-          value={username}
-          onChangeText={setUsername}
-          autoCapitalize="none"
-        />
-      </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>EMAIL</Text>
         <TextInput
