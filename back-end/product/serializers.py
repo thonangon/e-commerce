@@ -44,5 +44,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
         for image in images_data:
             Media.objects.create(product=product, image=image)
-
         return product
+    
+    
