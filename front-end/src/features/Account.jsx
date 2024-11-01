@@ -10,45 +10,72 @@ const { width } = Dimensions.get('window');
 const MyAccountScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { username, email, password } = route.params || {}; 
-  const [firstName, setFirstName] = useState(username || ''); 
+  const { email, password, token } = route.params || {}; 
+  const [firstName, setFirstName] = useState(''); 
   const [lastName, setLastName] = useState(''); 
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const account = async () => {
+  // Email verification function
+  const verifyEmail = async () => {
     try {
-      const response = await axios.post(`${API_URL}/auth/profile`, {
-        username,
-        email,
-        password,
-        first_name: firstName,
-        last_name: lastName,
-        phone,
-        gender,
-        
-      });
-      const { data } = response;
-      setFirstName(data.firstName || firstName);
-      setLastName(data.lastName);
-      setDob(data.dob);
-      setEmail(data.email);
-      setPhone(data.phone);
-      setGender(data.gender);
+      const response = await axios.get(`${API_URL}/auth/email-verify/${token}`);
+      setSuccessMessage(response.data.url || 'Email verified successfully.');
+      console.log(response.data.url)
     } catch (error) {
-      if (error.response) {
-        setError(error.response.data.message || 'Failed to fetch account data.');
-      } else {
-        setError('An error occurred while fetching account data.');
-      }
+      setError(error.response?.data?.message || 'Email verification failed.');
     }
   };
 
   useEffect(() => {
-    account();
-  }, []);
+    if (token) {
+      verifyEmail();
+    }
+  }, [token]);
+
+  const verifyProfile = () => {
+    if (!firstName.trim() || !lastName.trim() || !dob.trim() || !phone.trim() || !gender) {
+      setError('Please fill in all required fields.');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Invalid email format.');
+      return false;
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone)) {
+      setError('Invalid phone number format.');
+      return false;
+    }
+
+    setError(''); 
+    return true;
+  };
+
+  const postProfile = async () => {
+    if (!verifyProfile()) return; 
+
+    try {
+      await axios.post(`${API_URL}/auth/profile`, {
+        email,
+        password,
+        first_name: firstName,
+        last_name: lastName,
+        dob,
+        phone,
+        gender,
+      });
+      setError(''); 
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to update account data.');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -93,9 +120,7 @@ const MyAccountScreen = () => {
           value={password}
           secureTextEntry={true}
         />
-        <TouchableOpacity style={styles.editButton}>
-          {/* Icon can go here */}
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.editButton} />
       </View>
 
       <TextInput
@@ -135,9 +160,10 @@ const MyAccountScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.saveButton} onPress={() => navigation.navigate("HOMEPAGE")}>
+      <TouchableOpacity style={styles.saveButton} onPress={postProfile}>
         <Text style={styles.saveButtonText}>SAVE</Text>
       </TouchableOpacity>
+      {successMessage ? <Text style={{ color: 'green' }}>{successMessage}</Text> : null}
       {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
     </View>
   );

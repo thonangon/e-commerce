@@ -40,7 +40,7 @@ const LoginScreen = ({ navigation }) => {
           accountUser: {   email },
           tokenUser: response.tokens,
         });
-        console.log(response.data.user.email); // Accessing nested data
+        console.log(response.data.user.to_email); // Accessing nested data
         navigation.navigate("ACCOUNT",{email,password}); // navigate after successful registration
       }
     } catch (error) {
