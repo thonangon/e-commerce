@@ -1,40 +1,94 @@
-import React from 'react';
-import { ScrollView, Image } from 'react-native';
-import { Box, Text, VStack, HStack, Heading, Button, Divider, IconButton } from 'native-base';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Box, Text, VStack, HStack, Divider } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Modal } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-
-const ProductCard = ({ image, name, price, code }) => (
-  <Box bg="white" rounded="md" shadow={2} width={250}>
-    <Image source={image} alt={name} style={{ height: 350, width: '100%' }} />
-    <Box  position="absolute" top={220} left={3}  fontSize="sm">
-      <Text fontSize="md" bg="#fff" color="gray.400">CODE: {code}</Text>
-      <Text fontSize="md" bg="#fff" mt={1} mb={4}>${price}</Text>
-      <Text fontSize="sm" bold>{name}</Text>
-      <Text fontSize="xs" color="gray.500">Men's Soccer</Text>
-    </Box>
-  </Box>
-);
+import ProductSection from '../components/product/productSection';
+import axios from 'axios';
+import { API_URL } from '../config/index';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const categories = [
-    { name: 'SHOES', icon: 'footsteps-outline' }, 
-    { name: 'CLOTHING', icon: 'shirt-outline' }, 
-    { name: 'ACCESSORIES', icon: 'glasses-outline' }, 
-  ];
-  const products = [
-    { name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS', price: 160, code: 'SAVINGS', image: require('../assets/running1.png') },
-    { name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS', price: 160, code: 'SAVINGS', image: require('../assets/running2.png') },
-  ];
-  const handleShoes = (category) => {
-    navigation.navigate('PRODUCTSHOES');
+  const [productDataByCategory, setProductDataByCategory] = useState({});
+  const [arriveLists, setArriveLists] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("Men");
+  const [subCategories, setSubCategories] = useState([]); // Updated to store all subcategories
+  const mainCategories = ["Men", "Women", "Kids"];
+  
+  // Define an icon mapping for each subcategory
+  const iconMap = {
+    "shoes": "footsteps-outline",
+    "clothings": "shirt-outline",
+    "Accessories": "glasses-outline",
+  };
 
-  }
+  const fetchByMainCategory = useCallback(async (category) => {
+    try {
+      const response = await axios.get(`${API_URL}/product/product/${category}`);
+      if (response.status === 200) {
+        // Extract unique subcategory names
+        const subCategoryNames = Array.from(
+          new Set(
+            response.data.results.map(
+              product => product.category?.sub_category?.name
+            )
+          )
+        ).filter(Boolean);
+        
+        const formattedProducts = response.data.results.map(product => ({
+          name: product.productName,
+          price: product.color_size_combinations[0]?.size?.price || 0,
+          image: product.images[0]?.image.startsWith('http') ? product.images[0].image : `${API_URL}${product.images[0]?.image}`,
+          description: product.description || []
+        }));
+
+        const productsByCategory = {};
+        response.data.results.forEach(product => {
+          const categoryName = product.category?.name || "Unknown Category";
+          if (!productsByCategory[categoryName]) {
+            productsByCategory[categoryName] = [];
+          }
+          productsByCategory[categoryName].push({
+            name: product.productName,
+            price: product.color_size_combinations[0]?.size?.price || 0,
+            image: product.images[0]?.image,
+            description: product.description || []
+          });
+        });
+
+        setSubCategories(subCategoryNames);
+        setArriveLists(formattedProducts);
+        setProductDataByCategory(productsByCategory);
+      }
+    } catch (err) {
+      console.error('Failed to fetch products by category', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchByMainCategory(selectedCategory);
+  }, [fetchByMainCategory, selectedCategory]);
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+  };
+
   return (
     <ScrollView bg="#fff">
-      <Text ml={3}>BACK TO SCHOOL</Text>
+      <HStack justifyContent="flex-start" ml={3} space={5} bg="#f8f8f8" py={1}>
+        {mainCategories.map((category) => (
+          <TouchableOpacity key={category} onPress={() => handleCategoryChange(category)}>
+            <Text
+              fontSize="sm"
+              bold={selectedCategory === category}
+              color={selectedCategory === category ? "blue.500" : "gray.500"}
+              underline={selectedCategory === category}
+            >
+              {category}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </HStack>
       <Box>
         <Image
           source={require('../assets/category_page.png')}
@@ -49,86 +103,35 @@ const HomeScreen = () => {
         </Text>
       </Box>
       <VStack space={4} mt={5}>
-        {categories.map((category, idx) => (
-          <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1} >
+        {subCategories.map((subcategory, idx) => (
+          <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1}>
             <HStack alignItems="center">
-              <IconButton
-                icon={<Icon name={category.icon} size={15} color="black" />}
-                />
-              <Text ml={2}>{category.name}</Text>
+              <Icon
+                name={iconMap[subcategory] || "help-circle-outline"} // Use mapped icon or default icon if not found
+                size={15}
+                color="black"
+              />
+              <Text ml={5} >{subcategory}</Text>
             </HStack>
-            <Icon name="arrow-forward" size={24} color="black" onPress={handleShoes} />
+            <Icon
+              name="arrow-forward"
+              size={24}
+              color="black"
+              onPress={() => navigation.navigate('ProductScreen', { subcategory })}
+            />
           </HStack>
         ))}
-        <Divider></Divider>
+        <Divider />
       </VStack>
-      {/* Product Sections */}
       <VStack mt={8} px={7}>
-        <HStack justifyContent="space-between" alignItems="center">
-          <Heading size="md">NEW ARRIVALS</Heading>
-          <Button size="sm">
-            <HStack>
-              <Text >SEE ALL</Text>
-              <Icon name="arrow-forward" size={17} color="#00C2C2" />
-            </HStack>
-          </Button>
-        </HStack>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
-          {products.map((product, idx) => (
-            <ProductCard key={idx} {...product} />
-          ))}
-        </ScrollView>
-
-        <Divider my={5} />
-
-        <HStack justifyContent="space-between" alignItems="center">
-          <Heading size="md">BEST SELLERS</Heading>
-          <Button size="sm">
-            <HStack>
-              <Text >SEE ALL</Text>
-              <Icon name="arrow-forward" size={17} color="#00C2C2" />
-            </HStack>
-          </Button>
-        </HStack>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
-          {products.map((product, idx) => (
-            <ProductCard key={idx} {...product} />
-          ))}
-        </ScrollView>
-
-        <Divider my={5} />
-
-        <HStack justifyContent="space-between" alignItems="center">
-          <Heading size="md">RUNNING</Heading>
-          <Button size="sm">
-            <HStack>
-              <Text >SEE ALL</Text>
-              <Icon name="arrow-forward" size={17} color="#00C2C2" />
-            </HStack>
-          </Button>
-        </HStack>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
-          {products.map((product, idx) => (
-            <ProductCard key={idx} {...product} />
-          ))}
-        </ScrollView>
-        <Divider my={5} />
-        <HStack justifyContent="space-between" alignItems="center">
-          <Heading size="md">WALKING</Heading>
-          <Button size="sm">
-            <HStack>
-              <Text >SEE ALL</Text>
-              <Icon name="arrow-forward" size={17} color="#00C2C2" />
-            </HStack>
-          </Button>
-        </HStack>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 8 }}>
-          {products.map((product, idx) => (
-            <ProductCard key={idx} {...product} />
-          ))}
-        </ScrollView>
+        <ProductSection title={`${selectedCategory} - New Arrivals`} products={arriveLists} />
+        <ProductSection title="RECENTLY VIEWED ITEMS" products={arriveLists} />
+        {Object.entries(productDataByCategory).map(([categoryName, products], idx) => (
+          <ProductSection key={idx} title={categoryName} products={products} />
+        ))}
       </VStack>
     </ScrollView>
   );
 };
+
 export default HomeScreen;

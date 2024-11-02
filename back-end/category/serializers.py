@@ -23,3 +23,10 @@ class MainCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = MainCategory
         fields = ['id','name', 'subcategories']
+
+class CategorySubCatSerializer(serializers.ModelSerializer):
+    sub_category = SubCategorySerializer(read_only=True)
+    
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'sub_category', 'image']

@@ -12,7 +12,7 @@ class ProductSerializer(serializers.ModelSerializer):
     color_size_combinations = ColorOnProductSerializer(source='coloronproduct_set', many=True)
     images = uploadImageSerializer(many=True, read_only=True)  
     discount = DiscountSerializer(source='discount_set', many=True, read_only=True)  
-    category = CategorySerializer(read_only=True)
+    category = CategorySubCatSerializer(read_only=True)
 
     class Meta:
         model = Product
@@ -44,5 +44,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
         for image in images_data:
             Media.objects.create(product=product, image=image)
-
         return product
+    
+    
