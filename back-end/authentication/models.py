@@ -6,31 +6,24 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, username, email, password=None):
-        if username is None:
-            raise TypeError('Users should have a username')
+    def create_user(self, email, password=None,**extra_fields):
         if email is None:
             raise TypeError('Users should have a Email')
-
-        user = self.model(username=username, email=self.normalize_email(email))
+        email = self.normalize_email(email)
+        user = self.model( email=self.normalize_email(email),**extra_fields)
         user.set_password(password)
-        user.save()
+        user.save(using= self._db)
         return user
     
-    def create_superuser(self, username, email, password=None):
-        if password is None:
-            raise TypeError('Password should not be none')
+    def create_superuser(self, email, password=None,**extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
 
-        user = self.create_user(username, email, password)
-        user.is_superuser = True
-        user.is_staff = True
-        user.save()
-        return user
+        return self.create_user(email, password, **extra_fields)
 
 AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google','email': 'email'}
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=255, unique=True, db_index=True,null=True,blank=True)
     email = models.EmailField(max_length=255, unique=True, db_index=True)
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -42,7 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=False, default=AUTH_PROVIDERS.get('email'))
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []
     objects = UserManager()
 
     def __str__(self):
@@ -55,8 +48,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             'access': str(refresh.access_token),
         }
 
-class UserProfile(AbstractBaseUser):
+class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    first_name = models.CharField(max_length=100, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
     date_of_birth = models.DateTimeField(null= True,blank=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
     gender = models.CharField(max_length=20, choices=[

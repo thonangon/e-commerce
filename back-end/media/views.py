@@ -25,7 +25,7 @@ class ImgUploadView(APIView):
             },status= status.HTTP_200_OK)
         else:
             return Response({
-                'message': "Image uploaded successfully",
+                'message': "Image uploaded not  successfully",
 
             },status = status.HTTP_400_BAD_REQUEST)
         
@@ -33,4 +33,4 @@ class ImgUploadView(APIView):
     def get(self, request, *args, **kwargs):
         qs = Media.objects.all()
         qs_serializer = uploadImageSerializer(qs, many=True)
-        return Response(qs_serializer.data, status=status.HTTP_200_OK)
+        return Response({'data':qs_serializer.data}, status=status.HTTP_200_OK)

@@ -30,6 +30,7 @@ class CustomRedirect(HttpResponsePermanentRedirect):
 
     allowed_schemes = [os.environ.get('APP_SCHEME'), 'http', 'https']
 
+from django.shortcuts import get_object_or_404
 
 class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
@@ -39,29 +40,35 @@ class RegisterView(generics.GenericAPIView):
         serializer = self.serializer_class(data=user_data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        absurl = 'http://' + get_current_site(request).domain + reverse('email-verify') + "?token=" + str(refresh)
-        email_body = f'Hi {user.username}, use the link below to verify your email: \n{absurl}'
-        data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verify your email'}
-        Util.send_email(data)
-        return Response({'user': serializer.data, 'tokens': {'refresh': str(refresh), 'access': str(refresh.access_token)}}, status=status.HTTP_201_CREATED)
+        token = jwt.encode({'user_id': user.id}, settings.SECRET_KEY, algorithm='HS256')
+        absurl = 'http://' + get_current_site(request).domain + reverse('email-verify') + "?token=" + token
+        data = {
+            'url': absurl,
+            'to_email': user.email,
+            'email_subject': 'Verify your email',
+            "token": token,
+        }
+        return Response({
+            'user': data,
+            'message': 'Account created successfully.'
+        }, status=status.HTTP_201_CREATED)
 
 class UserProfileView(views.APIView):
-    permission_classes = (IsAuthenticated,)
-    def get(self, request):
-        try:
-            profile = UserProfile.objects.get(user=request.user)
-            serializer = UserProfileSerializer(profile)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except UserProfile.DoesNotExist:
-            return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
+    permission_classes = [IsAuthenticated]
 
-    def put(self, request):
-        try:
-            profile = UserProfile.objects.get(user=request.user)
-        except UserProfile.DoesNotExist:
-            return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
-
+    def post(self, request, *args, **kwargs):
+        """
+        Fetches the profile for the authenticated user only.
+        """
+        profile = get_object_or_404(Profile, user=request.user)
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, *args, **kwargs):
+        """
+        Updates the profile for the authenticated user only.
+        """
+        profile = get_object_or_404(Profile, user=request.user)
         serializer = UpdateProfileSerializer(profile, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -75,22 +82,24 @@ class VerifyEmail(views.APIView):
         'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
-        # Retrieve the token from the query parameters
         token = request.GET.get('token')
-
         try:
-            # Decode the JWT token using the secret key
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-            
-            # Retrieve the user based on the ID in the token payload
+
             user = User.objects.get(id=payload['user_id'])
 
-            # If the user is not verified, mark them as verified and save
             if not user.is_verified:
                 user.is_verified = True
+                absurl = 'http://' + get_current_site(request).domain + reverse('profile') 
+                data = {
+                    'url': absurl,
+                    'to_email': user.email,
+                    
+                }
                 user.save()
 
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            return Response({'email': 'Successfully activated',
+                             'data': data}, status=status.HTTP_200_OK)
 
         except jwt.ExpiredSignatureError:
             return Response({'error': 'Activation link has expired'}, status=status.HTTP_400_BAD_REQUEST)
