@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, VStack, Box } from 'native-base';
-import ShoeItem from '../product/product_types_card';
+import ShoeItem from './product_types_card';
 
 const ShoesList = ({ shoes, onNavigate }) => {
   return (
