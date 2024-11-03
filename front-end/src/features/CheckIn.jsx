@@ -33,25 +33,33 @@ const LoginScreen = ({ navigation }) => {
         email,
         password,
       });
-      
-      if (response.status === 201) { // assuming a successful registration
-        // dispatch(setUserInfo(response.data.user));
-        register({
-          accountUser: {   email },
-          tokenUser: response.tokens,
+  
+      if (response.status === 201) { 
+        const token = response.data.tokens; 
+        const verificationResponse = await axios.post(`${API_URL}/auth/email-verify/`, {
+          token, 
         });
-        console.log(response.data.user.email); // Accessing nested data
-        navigation.navigate("ACCOUNT",{email,password}); // navigate after successful registration
+  
+        if (verificationResponse.status === 200) {
+          
+          register({
+            accountUser: { email },
+            tokenUser: token,
+          });
+          console.log(response.data.user.email); // Accessing nested data
+          navigation.navigate("ACCOUNT", { email, password }); // Navigate after successful verification
+        }
       }
     } catch (error) {
       if (error.response) {
-        setError(error.response.data.message || 'Registration failed.'); // Display server error message
+        setError(error.response.data.message || 'Registration or verification failed.');
       } else {
         setError('An unexpected error occurred. Please try again.');
       }
       console.error("Error:", error);
     }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
