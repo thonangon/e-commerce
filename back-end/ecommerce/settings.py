@@ -123,15 +123,13 @@ CORS_ORIGIN_REGEX_WHITELIST = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shop_db',
-        'USER': 'thona',
-        'PASSWORD': 'djpassword',
+        'NAME': 'shop_db', 
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '5432',
     }
-    
 }
-
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -199,6 +197,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 EMAIL_USE_TLS = True  
 EMAIL_HOST = 'smtp.gmail.com'  
-EMAIL_HOST_USER = 'takeothona61@gmail.com'  
-EMAIL_HOST_PASSWORD = 'takeo437$'  
+EMAIL_HOST_USER = ''  
+EMAIL_HOST_PASSWORD = ''  
 EMAIL_PORT = 587  
