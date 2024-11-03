@@ -14,8 +14,10 @@ import SoppingChart from '../screen/ChatScreen';
 import FavoriteScreen from '../screen/FavoriteScreen';
 import AddressDelivery from '../screen/AddressScreen';
 import PlaceOrder from '../screen/PlaceOrderScreen';
-import ProductScreen from '../screen/ProductScreen';
 import ProductDetail from '../screen/ProductDetail';
+import ProductShoes from '../screen/Men/ProductShoes';
+import ProductClothing from '../screen/Men/Product_Clothing_Screen';
+import ProductAccesories from '../screen/Men/Product_Accesories_Screen';
 import Tabs from './tabBar';
 
 const Stack = createNativeStackNavigator();
@@ -73,7 +75,9 @@ const App = () => {
       <Stack.Screen name="FAVORITE" component={FavoriteScreen} />
       <Stack.Screen name="ADDRESS" component={AddressDelivery} />
       <Stack.Screen name="PLACEORDER" component={PlaceOrder} />
-      <Stack.Screen name="PRODUCTSHOES" component={ProductScreen} />
+      <Stack.Screen name="PRODUCTSHOES" component={ProductShoes} />
+      <Stack.Screen name="PRODUCTCLOTHING" component={ProductClothing} />
+      <Stack.Screen name="PRODUCTACCESORIES" component={ProductAccesories} />
       <Stack.Screen name="PRODUCTSOCKER" component={ProductDetail} />
     </Stack.Navigator>
   );
