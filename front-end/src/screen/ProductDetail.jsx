@@ -38,13 +38,18 @@ const HomeScreen = () => {
 
     if (loading) return <Loading />;
     if (error) return <ErrorMessage message={error.message} />;
+    const soccerItemCount = soccerItems.length;
 
     return (
         <RNScrollView>
             <Header />
+            <Box padding={4} alignItems="center">
+                <Text fontSize="lg" fontWeight="bold">
+                    Count: {soccerItemCount}
+                </Text>
+            </Box>
             <HorizontalScrollMenu />
             <Banner />
-
             <FlatList
                 data={soccerItems}
                 renderItem={({ item }) => <ProductCard image={item.image} name={item.name} />}
