@@ -9,8 +9,6 @@ const ShoesScreen = () => {
   const route = useRoute();
   const { products } = route.params
   console.log(route.params);
-  
-
   const handleCheckIn = () => {
     navigation.goBack();
   };

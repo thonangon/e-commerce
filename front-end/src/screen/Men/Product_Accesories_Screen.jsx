@@ -60,7 +60,7 @@ const AccesariesScreen = () => {
                     <Text fontSize={16} color="black" bold>{category.name}</Text>
                   </HStack>
                   <IconButton
-                    onPress={() => handleNavigation(category.id, category.name)}
+                    onPress={() => navigation.navigate('PRODUCTSOCKER')}
                     icon={<Icon name="chevron-forward-outline" size={20} color="black" />}
                   />
                 </HStack>

@@ -13,9 +13,7 @@ const HomeScreen = () => {
   const [arriveLists, setArriveLists] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("Men");
   const [subCategories, setSubCategories] = useState([]);
-  // const mainCategories = ["Men", "Women", "Kids"];
   const mainCategories = useMemo(() => ["Men", "Women", "Kids"], []);
-
 
   const iconMap = {
     "Shoes": "footsteps-outline",

@@ -16,7 +16,6 @@ const ClothingScreen = () => {
         const filteredSubcategories = response.data.results.filter((subcategory) =>
           subcategory.name.toLowerCase() === 'clothings'
         
-        
         );
         setSubcategories(filteredSubcategories);
       } catch (error) {
