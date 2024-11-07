@@ -58,6 +58,8 @@ const AccesariesScreen = () => {
                       style={{ width: 60, height: 60, borderRadius: 8 }}
                     />
                     <Text fontSize={16} color="black" bold>{category.name}</Text>
+                    <Text fontSize={16} color="black" bold>{category.name}</Text>
+                    
                   </HStack>
                   <IconButton
                     onPress={() => handleNavigation(category.id, category.name)}

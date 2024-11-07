@@ -29,7 +29,7 @@ SECRET_KEY = '@6p-h7#oy4unyb4+(@i&3eq(knbkvjkeyv&@*8+a%f45b@mfm1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1']
+
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '10.0.2.2', '192.168.1.42']
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -124,8 +124,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'shop_db', 
-        'USER': 'postgres',
-        'PASSWORD': 'admin',
+        'USER': 'thona',
+        'PASSWORD': 'djpassword',
         'HOST': 'localhost',
         'PORT': '5432',
     }

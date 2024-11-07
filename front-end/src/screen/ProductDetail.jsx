@@ -3,7 +3,7 @@ import { ScrollView as RNScrollView, Image as RNImage } from 'react-native';
 import { Box, Text, VStack, HStack, IconButton, Image, ScrollView, } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-// import { FlatGrid } from 'react-native-super-grid';
+import { FlatGrid } from 'react-native-super-grid';
 import colors from '../utils/colors';
 
 const ProductCard = ({ image, name, price, code }) => (
@@ -34,8 +34,6 @@ const HomeScreen = () => {
         { name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS', price: 160, code: 'SAVINGS', image: require('../assets/running1.png'), category: "Men's Soccer" },
         { name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS', price: 160, code: 'SAVINGS', image: require('../assets/running2.png'), category: "Men's Soccer" },
     ];
-
-
     return (
         <RNScrollView>
             <HStack justifyContent="space-between" alignItems="center" px={3} py={2} bg="#00C2C2">
@@ -80,13 +78,11 @@ const HomeScreen = () => {
                                 FUTURE ICONS
                             </Text>
                         </Box>
-
                         <Box width={100} alignItems="center">
                             <Text fontSize="xs" color="black">
                                 SUPERLITE 3.0
                             </Text>
                         </Box>
-
                         <Box width={100} alignItems="center">
                             <Text fontSize="xs" color="black">
                                 VL COURT 3.0
@@ -101,18 +97,13 @@ const HomeScreen = () => {
                         <ProductCard key={idx} {...product} />
                     ))}
                 </HStack>
-
-
             </ScrollView>
-
             <Box bg="#fff" my={4}>
                 <Box position="relative">
                     <RNImage
-
                         source={require('../assets/running1.png')}
                         alt="Back to School"
                         style={{ width: '100%', height: 230 }}
-
                     />
                     <Text position="absolute" top={140} left={3} fontSize="sm" bg="white" px={2} bold>
                         SAVE ON BACK TO SCHOOL
@@ -173,5 +164,4 @@ const HomeScreen = () => {
         </RNScrollView>
     );
 };
-
 export default HomeScreen;

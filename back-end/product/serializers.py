@@ -26,7 +26,7 @@ class ProductSerializer(serializers.ModelSerializer):
             raise PermissionDenied("Only superusers are allowed to create products.")
         
         color_size_combinations_data = validated_data.pop('coloronproduct_set', [])
-        images_data = request.FILES.getlist('images')  
+        
 
         product = Product.objects.create(**validated_data)
 
@@ -42,8 +42,7 @@ class ProductSerializer(serializers.ModelSerializer):
             size_instance, created = Size.objects.get_or_create(size_numeric=size_numeric, defaults={'price': price})
             ColorOnProduct.objects.create(product=product, color=color_instance, size=size_instance)
 
-        for image in images_data:
-            Media.objects.create(product=product, image=image)
+        
         return product
     
     
