@@ -7,6 +7,6 @@ class uploadImageSerializer(serializers.ModelSerializer):
         fields= ['media_id','image']
 
     def get_image(self, obj):
-        # Return only the path portion of the URL
-        return obj.image.url if obj.image else None
+        # Return only the path without the full URL
+        return obj.image.name  # This will return the relative file path
 

@@ -13,14 +13,13 @@ const HomeScreen = () => {
   const [arriveLists, setArriveLists] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("Men");
   const [subCategories, setSubCategories] = useState([]);
+  const [subCategoryItems, setSubCategoryItems] = useState([]);
   const mainCategories = useMemo(() => ["Men", "Women", "Kids"], []);
-
   const iconMap = {
     "Shoes": "footsteps-outline",
     "Clothings": "shirt-outline",
     "Accessories": "glasses-outline",
   };
-
   const fetchByMainCategory = useCallback(async (category) => {
     try {
       const response = await axios.get(`${API_URL}/product/product/${category}`);
@@ -28,17 +27,35 @@ const HomeScreen = () => {
         const subCategoryNames = Array.from(
           new Set(
             response.data.results.map(product => product.category?.sub_category?.name)
-
           )
-        ).filter(Boolean);
-
-        response.data.results.forEach(product => {
-          const subCategoryName = product.category?.sub_category?.name;
-          const shoeItems = product.category?.sub_category?.categories?.map(category => category.name) || []; // Map over categories to get each name
-
-          console.log(`Subcategory: ${subCategoryName}, Categories: ${shoeItems.join(', ')}`);
+        ).filter(Boolean); 
+        const subCategoryItems = response.data.results.flatMap(product => {
+          if (product.category?.sub_category) {
+            return {
+              subCategoryId: product.category.sub_category.id,
+              subCategoryName: product.category.sub_category.name,
+              categories: product.category.sub_category.categories.map(cat => ({
+                id: cat.id,
+                name: cat.name,
+                image: cat.image ? `${API_URL}${cat.image.replace('http://127.0.0.1:8000', 'http://10.0.2.2:8000')}` : ''
+              }))
+            };
+          }
+          return [];
         });
-
+        const uniqueSubCategoryItems = Array.from(
+          new Map(subCategoryItems.map(item => [item.subCategoryId, item])).values()
+        );
+        
+        
+        uniqueSubCategoryItems.forEach(subCategoryItem => {
+          console.log(`Subcategory ID: ${subCategoryItem.subCategoryId}, Subcategory Name: ${subCategoryItem.subCategoryName}`);
+          subCategoryItem.categories.forEach(category => {
+            console.log(`Category ID: ${category.id}, Category Name: ${category.name}`);
+            console.log(`Image: ${category.image}`);
+          });
+        });
+        
         const formattedProducts = response.data.results.map(product => ({
           name: product.productName,
           price: product.color_size_combinations[0]?.size?.price || 0,
@@ -58,10 +75,10 @@ const HomeScreen = () => {
             description: product.description || []
           });
         });
-
         setSubCategories(subCategoryNames);
         setArriveLists(formattedProducts);
         setProductDataByCategory(productsByCategory);
+        setSubCategoryItems(uniqueSubCategoryItems)
       }
     } catch (err) {
       console.error('Failed to fetch products by category', err);
@@ -121,16 +138,18 @@ const HomeScreen = () => {
               size={24}
               color="black"
               onPress={() => {
+                const subCategoryData = subCategoryItems.filter(item => item.subCategoryName === subcategory);
                 if (subcategory === "Shoes") {
-                  navigation.navigate('PRODUCTSHOES');
-                } else if (subcategory === "Clothings") { // Ensure it matches the key in iconMap
-                  navigation.navigate('PRODUCTCLOTHING');
+                  navigation.navigate('PRODUCTSHOES', { items: subCategoryData });
+                } else if (subcategory === "Clothings") {
+                  navigation.navigate('PRODUCTSHOES', { items: subCategoryData });
                 } else if (subcategory === "Accessories") {
-                  navigation.navigate('PRODUCTACCESORIES');
+                  navigation.navigate('PRODUCTSHOES', { items: subCategoryData });
                 } else {
-                  navigation.navigate('DEFAULT_SCREEN'); // Optional: A fallback screen
+                  navigation.navigate('DEFAULT_SCREEN', { items: subCategoryData });
                 }
               }}
+              
             />
           </HStack>
         ))}

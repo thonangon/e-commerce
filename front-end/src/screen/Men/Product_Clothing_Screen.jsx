@@ -8,32 +8,27 @@ import colors from '../../utils/colors';
 const ClothingScreen = () => {
   const navigation = useNavigation();
   const [subcategories, setSubcategories] = useState([]);
-
   useEffect(() => {
     const fetchSubcategories = async () => {
       try {
         const response = await axios.get('http://10.0.2.2:8000/category/sub-categories/');
         const filteredSubcategories = response.data.results.filter((subcategory) =>
           subcategory.name.toLowerCase() === 'clothings'
-        
         );
         setSubcategories(filteredSubcategories);
       } catch (error) {
         console.error('Error fetching subcategories:', error);
       }
     };
-
     fetchSubcategories();
   }, []);
 
   const handleCheckIn = () => {
     navigation.goBack();
   };
-
   const handleNavigation = (categoryId, categoryName) => {
     navigation.navigate('PRODUCTSOCKER', { id: categoryId, name: categoryName });
   };
-
   return (
     <VStack space={4} p={4} w="100%" maxW="400px" mx="auto" bg="white">
       <HStack alignItems="center" space={20} mb={4}>
