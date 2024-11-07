@@ -1,100 +1,81 @@
-import React, { useState, useEffect, useCallback ,useMemo } from 'react';
-import { ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { ScrollView, TouchableOpacity } from 'react-native';
 import { Box, Text, VStack, HStack, Divider } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import ProductSection from '../components/product/productSection';
 import axios from 'axios';
+
+import ProductSection from '../components/product/productSection';
+import Banner from '../components/SoccerMen/Banner';
 import { API_URL } from '../config/index';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+
+  // State Variables
   const [productDataByCategory, setProductDataByCategory] = useState({});
-  const [arriveLists, setArriveLists] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("Men");
   const [subCategories, setSubCategories] = useState([]);
-  const [subCategoryItems, setSubCategoryItems] = useState([]);
+  
   const mainCategories = useMemo(() => ["Men", "Women", "Kids"], []);
   const iconMap = {
     "Shoes": "footsteps-outline",
     "Clothings": "shirt-outline",
     "Accessories": "glasses-outline",
   };
-  const fetchByMainCategory = useCallback(async (category) => {
+
+  // Fetch Products by Category
+  const fetchProductsByCategory = useCallback(async (category) => {
     try {
       const response = await axios.get(`${API_URL}/product/product/${category}`);
       if (response.status === 200) {
-        const subCategoryNames = Array.from(
-          new Set(
-            response.data.results.map(product => product.category?.sub_category?.name)
-          )
-        ).filter(Boolean); 
-        const subCategoryItems = response.data.results.flatMap(product => {
-          if (product.category?.sub_category) {
-            return {
-              subCategoryId: product.category.sub_category.id,
-              subCategoryName: product.category.sub_category.name,
-              categories: product.category.sub_category.categories.map(cat => ({
-                id: cat.id,
-                name: cat.name,
-                image: cat.image ? `${API_URL}${cat.image.replace('http://127.0.0.1:8000', 'http://10.0.2.2:8000')}` : ''
-              }))
-            };
-          }
-          return [];
-        });
-        const uniqueSubCategoryItems = Array.from(
-          new Map(subCategoryItems.map(item => [item.subCategoryId, item])).values()
-        );
-        
-        
-        uniqueSubCategoryItems.forEach(subCategoryItem => {
-          console.log(`Subcategory ID: ${subCategoryItem.subCategoryId}, Subcategory Name: ${subCategoryItem.subCategoryName}`);
-          subCategoryItem.categories.forEach(category => {
-            console.log(`Category ID: ${category.id}, Category Name: ${category.name}`);
-            console.log(`Image: ${category.image}`);
-          });
-        });
-        
+        // Extract Subcategories
+        const subCategoryNames = Array.from(new Set(
+          response.data.results.map(product => product.category?.sub_category?.name)
+        )).filter(Boolean);
+
+        // Format Product Data
         const formattedProducts = response.data.results.map(product => ({
           name: product.productName,
           price: product.color_size_combinations[0]?.size?.price || 0,
           image: product.images[0]?.image.startsWith('http') ? product.images[0].image : `${API_URL}${product.images[0]?.image}`,
           description: product.description || []
         }));
-        const productsByCategory = {};
-        response.data.results.forEach(product => {
+
+        // Group Products by Category
+        const productsByCategory = response.data.results.reduce((acc, product) => {
           const categoryName = product.category?.name || "Unknown Category";
-          if (!productsByCategory[categoryName]) {
-            productsByCategory[categoryName] = [];
-          }
-          productsByCategory[categoryName].push({
+          acc[categoryName] = acc[categoryName] || [];
+          acc[categoryName].push({
             name: product.productName,
             price: product.color_size_combinations[0]?.size?.price || 0,
             image: product.images[0]?.image,
             description: product.description || []
           });
-        });
+          return acc;
+        }, {});
+
         setSubCategories(subCategoryNames);
-        setArriveLists(formattedProducts);
+        setNewArrivals(formattedProducts);
         setProductDataByCategory(productsByCategory);
-        setSubCategoryItems(uniqueSubCategoryItems)
       }
-    } catch (err) {
-      console.error('Failed to fetch products by category', err);
+    } catch (error) {
+      console.error('Failed to fetch products by category', error);
     }
   }, []);
 
+  // Fetch products when the selected category changes
   useEffect(() => {
-    fetchByMainCategory(selectedCategory);
-  }, [fetchByMainCategory, selectedCategory]);
+    fetchProductsByCategory(selectedCategory);
+  }, [fetchProductsByCategory, selectedCategory]);
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-  };
+  // Handle Category Change
+  const handleCategoryChange = (category) => setSelectedCategory(category);
 
   return (
     <ScrollView bg="#fff">
+      {/* Category Selection */}
       <HStack justifyContent="flex-start" ml={3} space={5} bg="#f8f8f8" py={1}>
         {mainCategories.map((category) => (
           <TouchableOpacity key={category} onPress={() => handleCategoryChange(category)}>
@@ -109,25 +90,17 @@ const HomeScreen = () => {
           </TouchableOpacity>
         ))}
       </HStack>
-      <Box>
-        <Image
-          source={require('../assets/category_page.png')}
-          alt="Back to School"
-          style={{ width: '100%', height: 230 }}
-        />
-        <Text position="absolute" top={140} left={3} fontSize="sm" bg="white" px={2} bold>
-          SAVE ON BACK TO SCHOOL
-        </Text>
-        <Text position="absolute" top={170} left={3} bg="white" px={2}>
-          30% off full price and sale. Use code: KIDS
-        </Text>
-      </Box>
+
+      {/* Banner */}
+      <Banner />
+
+      {/* Subcategories */}
       <VStack space={4} mt={5}>
         {subCategories.map((subcategory, idx) => (
           <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1}>
             <HStack alignItems="center">
               <Icon
-                name={iconMap[subcategory] || "help-circle-outline"} // Fallback icon if not found
+                name={iconMap[subcategory] || "help-circle-outline"}
                 size={15}
                 color="black"
               />
@@ -137,28 +110,22 @@ const HomeScreen = () => {
               name="arrow-forward"
               size={24}
               color="black"
-              onPress={() => {
-                const subCategoryData = subCategoryItems.filter(item => item.subCategoryName === subcategory);
-                if (subcategory === "Shoes") {
-                  navigation.navigate('PRODUCTSHOES', { items: subCategoryData });
-                } else if (subcategory === "Clothings") {
-                  navigation.navigate('PRODUCTSHOES', { items: subCategoryData });
-                } else if (subcategory === "Accessories") {
-                  navigation.navigate('PRODUCTSHOES', { items: subCategoryData });
-                } else {
-                  navigation.navigate('DEFAULT_SCREEN', { items: subCategoryData });
+              onPress={() => navigation.navigate(
+                'PRODUCTACCESORIES',
+                {
+                  cargory_name: subcategory,
                 }
-              }}
-              
+              )}
             />
           </HStack>
         ))}
         <Divider />
       </VStack>
 
+      {/* Product Sections */}
       <VStack mt={8} px={7}>
-        <ProductSection title={`${selectedCategory} - New Arrivals`} products={arriveLists} />
-        <ProductSection title="RECENTLY VIEWED ITEMS" products={arriveLists} />
+        <ProductSection title={`${selectedCategory} - New Arrivals`} products={newArrivals} />
+        <ProductSection title="Recently Viewed Items" products={newArrivals} />
         {Object.entries(productDataByCategory).map(([categoryName, products], idx) => (
           <ProductSection key={idx} title={categoryName} products={products} />
         ))}
