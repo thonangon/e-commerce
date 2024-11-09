@@ -85,22 +85,17 @@ class VerifyEmail(views.APIView):
         token = request.GET.get('token')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-
             user = User.objects.get(id=payload['user_id'])
-
             if not user.is_verified:
                 user.is_verified = True
                 absurl = 'http://' + get_current_site(request).domain + reverse('profile') 
                 data = {
                     'url': absurl,
                     'to_email': user.email,
-                    
                 }
                 user.save()
-
             return Response({'email': 'Successfully activated',
                              'data': data}, status=status.HTTP_200_OK)
-
         except jwt.ExpiredSignatureError:
             return Response({'error': 'Activation link has expired'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -138,9 +133,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
 
 class PasswordTokenCheckAPI(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
-
     def get(self, request, uidb64, token):
-
         redirect_url = request.GET.get('redirect_url')
         try:
             id = smart_str(urlsafe_base64_decode(uidb64))
@@ -161,7 +154,6 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                     
             except UnboundLocalError as e:
                 return Response({'error': 'Token is not valid, please request a new one'}, status=status.HTTP_400_BAD_REQUEST)
-
 class SetNewPasswordAPIView(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
     def patch(self, request):
