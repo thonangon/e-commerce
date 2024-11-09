@@ -10,8 +10,8 @@ const { width } = Dimensions.get('window');
 const MyAccountScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { username, email, password } = route.params || {}; 
-  const [firstName, setFirstName] = useState(username || ''); 
+  const {  email, password } = route.params || {}; 
+  const [firstName, setFirstName] = useState(''); 
   const [lastName, setLastName] = useState(''); 
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
@@ -21,7 +21,7 @@ const MyAccountScreen = () => {
   const account = async () => {
     try {
       const response = await axios.post(`${API_URL}/auth/profile`, {
-        username,
+       
         email,
         password,
         first_name: firstName,

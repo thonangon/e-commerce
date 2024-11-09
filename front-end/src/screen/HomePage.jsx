@@ -9,10 +9,10 @@ import categoriesData from './CategoriesScreen';
 import Chart from './ChatScreen';
 import FavoriteScreen from './FavoriteScreen';
 import { colors } from "../utils/colors";
-import {useAuth} from '../store/redux'
+import { useAuth } from '../store/redux';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
-
+import { useSelector, useDispatch } from 'react-redux';
+import { clearUser } from '../store/useSlice'; // Adjust the import path as needed
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -143,13 +143,13 @@ const HomeScreen = () => {
 const Tab = createBottomTabNavigator();
 const App = () => {
   const navigation = useNavigation();
-  const {user } = useAuth();
-
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  console.log('User:', user);
   const handleSignup = () => navigation.navigate('CAROUSEL');
   const handleLogout = () => {
-    setAccountUser(null); 
+    dispatch(clearUser());
   };
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -187,7 +187,7 @@ const App = () => {
           headerRight: () =>(
             user ? (
               <>
-                <TouchableOpacity style={styles.row} >
+                <TouchableOpacity style={styles.row} onPress={handleSignup}>
                   <MaterialIcons style={{ marginTop: 13 }} name="person" size={26} color="black" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.row} onPress={handleLogout}>

@@ -3,10 +3,8 @@ import { Box, Text, HStack, Divider, IconButton, Image } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ShoeItem = ({ item, onNavigate }) => {
-  console.log('ShoeItem received item:', item); // Confirm the item has a name
-
+  console.log('ShoeItem received item:', item); 
   if (!item) return null;
-
   return (
     <Box bg="white" >
       <HStack justifyContent="space-between" alignItems="center">

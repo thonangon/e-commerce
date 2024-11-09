@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   View,
@@ -9,63 +10,61 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-// import { useDispatch } from 'react-redux';
-// import { setUserInfo } from '../store/useSlice';
+import { useDispatch } from 'react-redux';
+import { registerSuccess, registerError } from '../store/useSlice';
 import { API_URL } from '../config/index';
-import {useAuth} from '../store/redux'
-const LoginScreen = ({ navigation }) => { 
-  const { register } = useAuth();
-  
+
+const LoginScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(''); // State to hold error messages
-
-  // const dispatch = useDispatch();
-
+  const [error, setError] = useState('');
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
   const userRegistration = async () => {
     try {
       const response = await axios.post(`${API_URL}/auth/register/`, {
         email,
         password,
       });
-      
-      if (response.status === 201) { // assuming a successful registration
-        // dispatch(setUserInfo(response.data.user));
-        register({
-          accountUser: {   email },
-          tokenUser: response.tokens,
-        });
-        console.log(response.data.user.email); // Accessing nested data
-        navigation.navigate("ACCOUNT",{email,password}); // navigate after successful registration
+      // console.log("Registration Response:", response); 
+      if (response.status === 200) {
+        const token = response.data.tokens;
+        const verificationResponse = await axios.get(`${API_URL}/auth/email-verify/`, { token });
+        console.log("Verification Response:", verificationResponse); 
+        if (verificationResponse.status === 200) {
+          const userData = {
+            accountUser: { email },
+            tokenUser: token,
+          };
+          dispatch(registerSuccess(userData));
+          navigation.navigate('ACCOUNT', { email, password });
+        }
       }
     } catch (error) {
-      if (error.response) {
-        setError(error.response.data.message || 'Registration failed.'); // Display server error message
-      } else {
-        setError('An unexpected error occurred. Please try again.');
-      }
-      console.error("Error:", error);
+      console.error("Error in userRegistration:", error); 
+      const errorMessage =
+        error.response?.data?.message || 'Registration or verification failed.';
+      setError(errorMessage);
+      dispatch(registerError(errorMessage));
     }
   };
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerTop}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
           <Icon name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-
         <Text style={styles.title}>GO FOR IT</Text>
       </View>
       <Text style={styles.subtitle}>Let's check if you have an account...</Text>
-
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
       <View style={styles.inputContainer}>
         <Text style={styles.label}>EMAIL</Text>
         <TextInput
@@ -99,7 +98,6 @@ const LoginScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-      
       <TouchableOpacity style={styles.shopNowButton} onPress={userRegistration}>
         <Text style={styles.shopNowText}>REGISTER</Text>
       </TouchableOpacity>
