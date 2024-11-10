@@ -1,117 +1,166 @@
-import React from 'react';
-import { ScrollView as RNScrollView, Image as RNImage } from 'react-native';
-import { Box, Text, VStack, HStack, IconButton, Image, ScrollView, } from 'native-base';
+import React, { useState, useEffect } from 'react';
+import { ScrollView as RNScrollView, ActivityIndicator, FlatList, StyleSheet } from 'react-native';
+import { Box, VStack, HStack, IconButton, Text, Image, Pressable, Center } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
-import { FlatGrid } from 'react-native-super-grid';
-import colors from '../utils/colors';
-
-import ProductCard from '../components/SoccerMen/ProductCard';
-import Header from '../components/SoccerMen/Header';
-import HorizontalScrollMenu from '../components/SoccerMen/ScrolMenue';
-import Banner from '../components/SoccerMen/Banner';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const Loading = () => <ActivityIndicator size="large" color="#00C2C2" />;
-const ErrorMessage = ({ message }) => <Text>Error: {message}</Text>;
+const ErrorMessage = ({ message }) => <Text style={styles.error}>Error: {message}</Text>;
+const NoProductsMessage = () => <Text style={styles.noProducts}>No products available.</Text>;
 
-const HomeScreen = () => {
-    const [soccerItems, setSoccerItems] = useState([]);
-    const [loading, setLoading] = useState(true);
+const ProductDetail = () => {
+    const navigation = useNavigation();
+    const route = useRoute();
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const products = [
-        { name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS', price: 160, code: 'SAVINGS', image: require('../assets/running1.png'), category: "Men's Soccer" },
-        { name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS', price: 160, code: 'SAVINGS', image: require('../assets/running2.png'), category: "Men's Soccer" },
-    ];
+    const { productDataByCategory = [], formattedProducts = [] } = route.params || {};
+
+    const products = (productDataByCategory || []).flatMap(product => {
+        const matchingProducts = (formattedProducts || []).filter(
+            formattedProduct => formattedProduct.category === product.name
+        );
+
+        return matchingProducts.map(matchedFormattedProduct => ({
+            id: product.productId || matchedFormattedProduct.id || `temp-${Math.random()}`,
+            name: matchedFormattedProduct.name || "Unnamed Product",
+            price: matchedFormattedProduct.price || 0,
+            image: matchedFormattedProduct.image || 'https://via.placeholder.com/150',
+            description: matchedFormattedProduct.description || product.description || "No description available",
+            discount: matchedFormattedProduct.discount,
+            isBestSeller: matchedFormattedProduct.isBestSeller,
+        }));
+    });
+
     return (
-        <RNScrollView>
+        <Box flex={1} bg="white">
             <HStack justifyContent="space-between" alignItems="center" px={3} py={2} bg="#00C2C2">
                 <IconButton
                     icon={<Icon name="chevron-back" size={24} color="white" />}
                     onPress={() => navigation.goBack()}
                     variant="unstyled"
+                    accessibilityLabel="Go back"
                 />
-                <HStack space={4}>
-                    <Text fontSize="md" color="white" fontWeight="bold">
-                        MEN • SOCCER
-                    </Text>
-                </HStack>
-
                 <IconButton
                     icon={<Icon name="search" size={24} color="white" />}
                     onPress={() => console.log('Search')}
                     variant="unstyled"
+                    accessibilityLabel="Search products"
                 />
-
             </HStack>
+
             <RNScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingVertical: 8 }}
+                contentContainerStyle={styles.scrollContainer}
             >
-                <Box pt={1} px={4} marginBottom={3}>
-                    <HStack
-                        mt={1}
-                        justifyContent="space-between"
-                        alignItems="center"
-                        space={2}
-                    >
-                        <Box width={100} alignItems="center">
-                            <Text fontSize="xs" color="black">
-                                F50
-                            </Text>
-                        </Box>
-
-                        <Box width={100} alignItems="center">
-                            <Text fontSize="xs" color="black">
-                                FUTURE ICONS
-                            </Text>
-                        </Box>
-                        <Box width={100} alignItems="center">
-                            <Text fontSize="xs" color="black">
-                                SUPERLITE 3.0
-                            </Text>
-                        </Box>
-                        <Box width={100} alignItems="center">
-                            <Text fontSize="xs" color="black">
-                                VL COURT 3.0
-                            </Text>
-                        </Box>
+                <Box pt={1} px={4} mb={3}>
+                    <HStack space={3} alignItems="center">
+                        {["F50", "FUTURE ICONS", "SUPERLITE 3.0", "VL COURT 3.0"].map((item, index) => (
+                            <Center key={index} width={100}>
+                                <Text fontSize="12" color="black">{item}</Text>
+                            </Center>
+                        ))}
                     </HStack>
                 </Box>
             </RNScrollView>
-            <ScrollView >
-                <HStack >
-                    {products.map((product, idx) => (
-                        <ProductCard key={idx} {...product} />
-                    ))}
-                </HStack>
-            </ScrollView>
-            <Box bg="#fff" my={4}>
-                <Box position="relative">
-                    <RNImage
-                        source={require('../assets/running1.png')}
-                        alt="Back to School"
-                        style={{ width: '100%', height: 230 }}
-                    />
-                    <Text position="absolute" top={140} left={3} fontSize="sm" bg="white" px={2} bold>
-                        SAVE ON BACK TO SCHOOL
-                    </Text>
-                    <Text position="absolute" top={170} left={3} bg="white" px={2}>
-                        30% off full price and sale. Use code: KIDS
-                    </Text>
-                </Box>
-            </Box>
-            <HorizontalScrollMenu />
-            <Banner />
-            <FlatList
-                data={soccerItems}
-                renderItem={({ item }) => <ProductCard image={item.image} name={item.name} />}
-                keyExtractor={(item) => item.id.toString()}
-                numColumns={2}
-                contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 16 }}
-            />
-        </RNScrollView>
+
+            {loading ? (
+                <Loading />
+            ) : error ? (
+                <ErrorMessage message={error} />
+            ) : products.length === 0 ? (
+                <NoProductsMessage />
+            ) : (
+                <FlatList
+                    data={products}
+                    keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+                    renderItem={({ item }) => (
+                        <Box width="50%" padding={2} bg="white">
+                            <Pressable onPress={() => console.log(`Selected ${item.name}`)}>
+                                <Image
+                                    source={{ uri: item.image }}
+                                    alt={item.name}
+                                    style={styles.productImage}
+                                    accessibilityLabel={`Image of ${item.name}`}
+                                />
+                                <Box p={3} w="100%">
+                                    <HStack alignItems="center" space={1}>
+                                        {item.discount && (
+                                            <Text style={styles.discountedPrice}>
+                                                {item.price}
+                                            </Text>
+                                        )}
+                                        <Text style={styles.price}>{item.price}</Text>
+                                    </HStack>
+                                    <Text style={styles.productName}>{item.name}</Text>
+                                    <Text style={styles.productDescription}>{item.description}</Text>
+                                </Box>
+                                <Pressable style={styles.wishlistIcon}>
+                                    <Icon name="heart-outline" size={18} color="black" accessibilityLabel="Add to wishlist" />
+                                </Pressable>
+                            </Pressable>
+                        </Box>
+                    )}
+                />
+            )}
+        </Box>
     );
 };
-export default HomeScreen;
+
+const styles = StyleSheet.create({
+    error: {
+        color: 'red',
+        textAlign: 'center',
+        marginVertical: 20,
+        fontSize: 16,
+    },
+    noProducts: {
+        color: 'gray',
+        textAlign: 'center',
+        marginVertical: 20,
+        fontSize: 16,
+    },
+    scrollContainer: {
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+    },
+    productImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
+        marginBottom: 8,
+    },
+    discountedPrice: {
+        fontSize: 16,
+        color: 'red',
+        textDecorationLine: 'line-through',
+        marginRight: 4,
+    },
+    price: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    productName: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#333',
+        marginVertical: 4,
+    },
+    productDescription: {
+        fontSize: 12,
+        color: '#666',
+        marginBottom: 8,
+    },
+    wishlistIcon: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        padding: 4,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        borderRadius: 50,
+    },
+});
+
+export default ProductDetail;
