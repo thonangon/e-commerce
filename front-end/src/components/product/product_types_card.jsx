@@ -2,13 +2,16 @@ import React from 'react';
 import { Box, Text, HStack, Divider, IconButton, Image } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const ShoeItem = ({ item, onNavigate }) => {
-  console.log('ShoeItem received item:', item); // Confirm the item has a name
+const ShoeItem = ({ item, onNavigate, formattedProducts }) => {
+  // console.log('ShoeItem received item:', item); // Confirm the item has a name
 
   if (!item) return null;
 
+  // Prepare product details for navigation
+  const productDetails = { productDataByCategory: [item], formattedProducts };
+
   return (
-    <Box bg="white" >
+    <Box bg="white">
       <HStack justifyContent="space-between" alignItems="center">
         <Image
           source={{ uri: item.image }}
@@ -19,7 +22,7 @@ const ShoeItem = ({ item, onNavigate }) => {
           {item.name || "Unknown Shoe"}
         </Text>
         <IconButton
-          onPress={() => onNavigate(item.id, item.name)}
+          onPress={() => onNavigate(productDetails)} // Pass productDetails, which includes formattedProducts
           icon={<Icon name="chevron-forward-outline" size={20} color="black" />}
         />
       </HStack>
@@ -27,4 +30,5 @@ const ShoeItem = ({ item, onNavigate }) => {
     </Box>
   );
 };
+
 export default ShoeItem;
