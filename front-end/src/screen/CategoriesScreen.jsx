@@ -59,6 +59,7 @@ const HomeScreen = () => {
           image: product.images[0]?.image.startsWith('http') ? product.images[0].image : `${API_URL}${product.images[0]?.image}`,
           description: product.description || []
         }));
+        // console.log('werty',formattedProducts);
 
         const productsByCategory = {};
         response.data.results.forEach(product => {
@@ -93,6 +94,8 @@ const HomeScreen = () => {
     setSelectedCategory(category);
   };
 
+
+
   return (
     <ScrollView bg="#fff">
       <HStack justifyContent="flex-start" ml={3} space={5} bg="#f8f8f8" py={1}>
@@ -109,8 +112,8 @@ const HomeScreen = () => {
           </TouchableOpacity>
         ))}
       </HStack>
-      <Banner/>
- 
+      <Banner />
+
       <VStack space={4} mt={5}>
         {subCategories.map((subcategory, idx) => (
           <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1}>

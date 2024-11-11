@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {Image, TouchableOpacity, ImageBackground, View, ScrollView as RNScrollView,TextBase} from 'react-native';
-import {Box, Button, Divider, Modal, HStack, IconButton, VStack, Select, Text,} from 'native-base';
+import { Image, TouchableOpacity, ImageBackground, View, ScrollView as RNScrollView, TextBase } from 'react-native';
+import { Box, Button, Divider, Modal, HStack, IconButton, VStack, Select, Text, } from 'native-base';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
@@ -9,9 +9,8 @@ import categoriesData from './CategoriesScreen';
 import Chart from './ChatScreen';
 import FavoriteScreen from './FavoriteScreen';
 import { colors } from "../utils/colors";
-import {useAuth} from '../store/redux'
+import { useAuth } from '../store/redux'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -55,10 +54,10 @@ const HomeScreen = () => {
 
   return (
     <Box flex={1} bg={colors.bg_home}>
-      <Divider mx={1}  />
+      <Divider mx={1} />
       <RNScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScrollContainer}>
         <Box px={2} py={0}>
-          
+
           <HStack mt={1} justifyContent="space-between" alignItems="center" space={1}>
             <VStack>
               <Select
@@ -84,17 +83,17 @@ const HomeScreen = () => {
                   ?.subcategories?.flatMap((subcategory) =>
                     subcategory.categories?.map((category) => (
                       <Button
-                      
-                      key={category.id}
-                      py={1}
-                      variant="outline"
-                      bg={category.id === selectedCategory ? 'black.100' : 'white'}
-                      _text={{ color: category.id === selectedCategory ? "white" : "black" }}
-                      onPress={() => {
-                        setSelectedCategory(category.id);
-                        scrollToCategory(category.id);
-                      }}
-                      
+
+                        key={category.id}
+                        py={1}
+                        variant="outline"
+                        bg={category.id === selectedCategory ? 'black.100' : 'white'}
+                        _text={{ color: category.id === selectedCategory ? "white" : "black" }}
+                        onPress={() => {
+                          setSelectedCategory(category.id);
+                          scrollToCategory(category.id);
+                        }}
+
                       >
                         {/* navigation.navigate('productTypes',{category}) */}
                         {category.name}
@@ -143,11 +142,11 @@ const HomeScreen = () => {
 const Tab = createBottomTabNavigator();
 const App = () => {
   const navigation = useNavigation();
-  const {user } = useAuth();
+  const { user } = useAuth();
 
   const handleSignup = () => navigation.navigate('CAROUSEL');
   const handleLogout = () => {
-    setAccountUser(null); 
+    setAccountUser(null);
   };
 
   return (
@@ -184,7 +183,7 @@ const App = () => {
           headerTitle: "HELLO",
           headerStyle: { backgroundColor: colors.bg_home },
           headerTintColor: '#fff',
-          headerRight: () =>(
+          headerRight: () => (
             user ? (
               <>
                 <TouchableOpacity style={styles.row} >
@@ -262,3 +261,4 @@ const styles = {
 };
 
 export default App;
+
