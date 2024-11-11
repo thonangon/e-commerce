@@ -52,11 +52,17 @@ const HomeScreen = () => {
         );
 
         const formattedProducts = response.data.results.map(product => ({
+          id : product.productId,
           category:product.category?.name,
           name: product.productName,
           price: product.color_size_combinations[0]?.size?.price || 0,
           image: product.images[0]?.image.startsWith('http') ? product.images[0].image : `${API_URL}${product.images[0]?.image}`,
-          description: product.description || []
+          description: product.description || [],
+          heading: product.heading || [],
+          subHeading: product.subHeading || [],
+          colors: product.color_size_combinations[0]?.color?.colorName || '',
+          size_number: product.color_size_combinations[0]?.size?.size_numeric || '',
+          size_name: product.color_size_combinations[0]?.size?.size_name || 0,
         }));
 
         const productsByCategory = {};

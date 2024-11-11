@@ -4,7 +4,7 @@ import { Box, Text, IconButton } from 'native-base';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 
-const ProductCard = ({ image, name, price, description,category }) => {
+const ProductCard = ({ id,image, name, price, description,heading,subHeading,colors,size_number,size_name,category }) => {
   const navigation = useNavigation();
   return (
 
