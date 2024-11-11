@@ -5,16 +5,17 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import colors from '../../utils/colors';
 
-const AccesariesScreen = () => {
+const AccesariesScreen = ({route}) => {
   const navigation = useNavigation();
   const [subcategories, setSubcategories] = useState([]);
-
+  const {cargory_name} = route.params;
+  // console.log("==============>",cargory_name)
   useEffect(() => {
     const fetchSubcategories = async () => {
       try {
         const response = await axios.get('http://10.0.2.2:8000/category/sub-categories/');
         const filteredSubcategories = response.data.results.filter((subcategory) =>
-          subcategory.name.toLowerCase() === 'accessories'
+          subcategory.name.toLowerCase() === cargory_name.toLowerCase()
         );
         setSubcategories(filteredSubcategories);
       } catch (error) {
@@ -23,7 +24,7 @@ const AccesariesScreen = () => {
     };
 
     fetchSubcategories();
-  }, []);
+  }, [cargory_name]);
 
   const handleCheckIn = () => {
     navigation.goBack();
@@ -37,7 +38,7 @@ const AccesariesScreen = () => {
     <VStack space={4} p={4} w="100%" maxW="400px" mx="auto" bg="white">
       <HStack alignItems="center" space={20} mb={4}>
         <Icon name="chevron-back-outline" size={24} color="black" onPress={handleCheckIn} />
-        <Text bold fontSize={18} color="black">Accessories</Text>
+        <Text bold fontSize={18} color="black">{cargory_name}</Text>
       </HStack>
       <ScrollView>
         {subcategories.map((Accessories) => (
@@ -58,8 +59,6 @@ const AccesariesScreen = () => {
                       style={{ width: 60, height: 60, borderRadius: 8 }}
                     />
                     <Text fontSize={16} color="black" bold>{category.name}</Text>
-                    <Text fontSize={16} color="black" bold>{category.name}</Text>
-                    
                   </HStack>
                   <IconButton
                     onPress={() => navigation.navigate('PRODUCTSOCKER')}

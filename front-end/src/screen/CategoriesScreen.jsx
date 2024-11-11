@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import ProductSection from '../components/product/productSection';
 import axios from 'axios';
 import { API_URL } from '../config/index';
+import Banner from '../components/SoccerMen/Banner';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -15,7 +16,7 @@ const HomeScreen = () => {
   const [subCategories, setSubCategories] = useState([]);
   const [subCategoryItems, setSubCategoryItems] = useState([]);
   const mainCategories = useMemo(() => ["Men", "Women", "Kids"], []);
-  
+
   const iconMap = {
     "Shoes": "footsteps-outline",
     "Clothings": "shirt-outline",
@@ -30,8 +31,8 @@ const HomeScreen = () => {
           new Set(
             response.data.results.map(product => product.category?.sub_category?.name)
           )
-        ).filter(Boolean); 
-        
+        ).filter(Boolean);
+
         const subCategoryItems = response.data.results.flatMap(product => {
           if (product.category?.sub_category) {
             return {
@@ -52,7 +53,7 @@ const HomeScreen = () => {
         );
 
         const formattedProducts = response.data.results.map(product => ({
-          category:product.category?.name,
+          category: product.category?.name,
           name: product.productName,
           price: product.color_size_combinations[0]?.size?.price || 0,
           image: product.images[0]?.image.startsWith('http') ? product.images[0].image : `${API_URL}${product.images[0]?.image}`,
@@ -108,19 +109,8 @@ const HomeScreen = () => {
           </TouchableOpacity>
         ))}
       </HStack>
-      <Box>
-        <Image
-          source={require('../assets/category_page.png')}
-          alt="Back to School"
-          style={{ width: '100%', height: 230 }}
-        />
-        <Text position="absolute" top={140} left={3} fontSize="sm" bg="white" px={2} bold>
-          SAVE ON BACK TO SCHOOL
-        </Text>
-        <Text position="absolute" top={170} left={3} bg="white" px={2}>
-          30% off full price and sale. Use code: KIDS
-        </Text>
-      </Box>
+      <Banner/>
+ 
       <VStack space={4} mt={5}>
         {subCategories.map((subcategory, idx) => (
           <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1}>
@@ -138,8 +128,8 @@ const HomeScreen = () => {
               color="black"
               onPress={() => {
                 const subCategoryData = subCategoryItems.filter(item => item.subCategoryName === subcategory);
-                navigation.navigate('PRODUCTSHOES', { 
-                  items: subCategoryData, 
+                navigation.navigate('PRODUCTSHOES', {
+                  items: subCategoryData,
                   formattedProducts: arriveLists
                 });
               }}
