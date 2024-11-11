@@ -7,7 +7,7 @@ const CustomModal = ({ isOpen, onClose, title, bodyContent, footerContent }) => 
     <Modal isOpen={isOpen} onClose={onClose} size="full">
       <Modal.Content
         maxWidth="100%"
-        height="50%" // Bottom-half modal
+        height="50%"
         marginBottom={0}
         position="absolute"
         bottom="0"

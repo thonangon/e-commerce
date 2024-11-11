@@ -4,7 +4,7 @@ import { Box, Text, IconButton } from 'native-base';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 
-const ProductCard = ({ image, name, price, code, description }) => {
+const ProductCard = ({ image, name, price, description,category }) => {
   const navigation = useNavigation();
   return (
 
@@ -23,7 +23,7 @@ const ProductCard = ({ image, name, price, code, description }) => {
       {/* Product Details */}
       <Box position="absolute" top={220} left={3} padding={2} width="90%">
         <Text fontSize="md" bg="white" color="gray.400" paddingX={1} rounded="sm">
-          CODE: {code}
+          CODE: {category}
         </Text>
         <Text fontSize="md" bg="white" mt={1} mb={4} paddingX={1} rounded="sm">
           ${price}
