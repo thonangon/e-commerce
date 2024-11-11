@@ -110,7 +110,10 @@ const HomeScreen = () => {
         {categories.map((mainCategory) => (
           mainCategory.subcategories?.map((subcategory) => (
             subcategory.categories?.map((category) => {
-              const imageUrl = category.image ? `http://10.0.2.2:8000${category.image}` : null;
+              const imageUrl = category.image ? `http://10.0.2.2:8000${category.image}` : require('../assets/0.png');
+              
+
+              
               return (
                 <View key={category.id} onLayout={(event) => setCategoryOffset(category.id, event)}>
                   <ImageBackground source={imageUrl ? { uri: imageUrl } : require('../assets/fav2.png')} style={styles.imageBackground}>
