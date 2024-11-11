@@ -6,31 +6,27 @@ from .models import *
 from media.models import Media
 from discount.seriailizers import *
 from category.serializers import *
-
+from review.serializers import *
 
 class ProductSerializer(serializers.ModelSerializer):
     color_size_combinations = ColorOnProductSerializer(source='coloronproduct_set', many=True)
     images = uploadImageSerializer(many=True, read_only=True)  
     discount = DiscountSerializer(source='discount_set', many=True, read_only=True)  
     category = CategorySubCatSerializer(read_only=True)
+    review = ReviewSerializer(source='review_set', many=True, read_only=True)  
 
     class Meta:
         model = Product
-        fields = ['productId', 'productName', 'description', 'heading', 'subHeading', 'category', 'color_size_combinations', 'images', 'discount']
+        fields = ['productId', 'productName', 'description', 'heading', 'subHeading', 'category', 'color_size_combinations', 'images', 'discount','review']
 
     def create(self, validated_data):
         request = self.context.get('request')
-        
-        # Check if the user is a superuser
+
         if not request.user.is_staff == True:
             raise PermissionDenied("Only superusers are allowed to create products.")
-        
         color_size_combinations_data = validated_data.pop('coloronproduct_set', [])
-        
-
         product = Product.objects.create(**validated_data)
 
-        # Process color and size combinations
         for color_size_data in color_size_combinations_data:
             color_data = color_size_data.get('color', {})
             color_name = color_data.get('colorName')
@@ -41,8 +37,4 @@ class ProductSerializer(serializers.ModelSerializer):
             price = size_data.get('price')
             size_instance, created = Size.objects.get_or_create(size_numeric=size_numeric, defaults={'price': price})
             ColorOnProduct.objects.create(product=product, color=color_instance, size=size_instance)
-
-        
         return product
-    
-    

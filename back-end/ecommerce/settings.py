@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'colorOnProduct',
     'order',
     'orderDetail',
-    'discount'
+    'discount',
+    'review',
     
 ]
 
