@@ -3,6 +3,8 @@ import { ScrollView as RNScrollView, ActivityIndicator, FlatList, StyleSheet } f
 import { Box, VStack, HStack, IconButton, Text, Image, Pressable, Center } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import ScrolMenue from '../components/Header/ScrolMenue';
+import IconsHead from '../components/Header/Iconshead';
 
 const Loading = () => <ActivityIndicator size="large" color="#00C2C2" />;
 const ErrorMessage = ({ message }) => <Text style={styles.error}>Error: {message}</Text>;
@@ -34,36 +36,9 @@ const ProductDetail = () => {
 
     return (
         <Box flex={1} bg="white">
-            <HStack justifyContent="space-between" alignItems="center" px={3} py={2} bg="#00C2C2">
-                <IconButton
-                    icon={<Icon name="chevron-back" size={24} color="white" />}
-                    onPress={() => navigation.goBack()}
-                    variant="unstyled"
-                    accessibilityLabel="Go back"
-                />
-                <IconButton
-                    icon={<Icon name="search" size={24} color="white" />}
-                    onPress={() => console.log('Search')}
-                    variant="unstyled"
-                    accessibilityLabel="Search products"
-                />
-            </HStack>
 
-            <RNScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContainer}
-            >
-                <Box pt={1} px={4} mb={3}>
-                    <HStack space={3} alignItems="center">
-                        {["F50", "FUTURE ICONS", "SUPERLITE 3.0", "VL COURT 3.0"].map((item, index) => (
-                            <Center key={index} width={100}>
-                                <Text fontSize="12" color="black">{item}</Text>
-                            </Center>
-                        ))}
-                    </HStack>
-                </Box>
-            </RNScrollView>
+            <IconsHead></IconsHead>
+            <ScrolMenue></ScrolMenue>
 
             {loading ? (
                 <Loading />

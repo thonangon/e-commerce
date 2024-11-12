@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import ProductSection from '../components/product/productSection';
 import axios from 'axios';
 import { API_URL } from '../config/index';
-import Banner from '../components/SoccerMen/Banner';
+import Banner from '../components/Header/Banner';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -59,7 +59,6 @@ const HomeScreen = () => {
           image: product.images[0]?.image.startsWith('http') ? product.images[0].image : `${API_URL}${product.images[0]?.image}`,
           description: product.description || []
         }));
-        // console.log('werty',formattedProducts);
 
         const productsByCategory = {};
         response.data.results.forEach(product => {
@@ -119,7 +118,7 @@ const HomeScreen = () => {
           <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1}>
             <HStack alignItems="center">
               <Icon
-                name={iconMap[subcategory] || "help-circle-outline"} // Fallback icon if not found
+                name={iconMap[subcategory] || "help-circle-outline"} 
                 size={15}
                 color="black"
               />

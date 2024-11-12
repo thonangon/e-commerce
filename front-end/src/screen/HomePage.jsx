@@ -95,7 +95,6 @@ const HomeScreen = () => {
                         }}
 
                       >
-                        {/* navigation.navigate('productTypes',{category}) */}
                         {category.name}
                       </Button>
                     ))

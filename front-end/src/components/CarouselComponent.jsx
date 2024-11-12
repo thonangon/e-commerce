@@ -39,9 +39,9 @@ const ActionImageCarousel = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (images.length > 0 ? (prevIndex + 1) % images.length : 0));
-    }, 1800); // Change image every 1.8 seconds
+    }, 1800); 
 
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    return () => clearInterval(interval); 
   }, [images]);
 
   return (

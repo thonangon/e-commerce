@@ -1,4 +1,3 @@
-// ProductSection.js
 import React from 'react';
 import { HStack, Heading, Button, Text, ScrollView, Divider } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -7,12 +6,7 @@ import { useNavigation ,useRoute } from '@react-navigation/native';
 
 const ProductSection = ({ title, products }) => {
   const route = useRoute();
-
-  // Retrieve the `items` data from the route parameters
-  // const products = route.params || {};
   console.log('-----hi---------------',products);
-  // Check if the `products` data is available
-  
   const navigation = useNavigation();
   return (
 
