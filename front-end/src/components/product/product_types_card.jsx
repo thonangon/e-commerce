@@ -2,11 +2,6 @@ import React from 'react';
 import { Box, Text, HStack, Divider, IconButton, Image } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-<<<<<<< HEAD
-const ShoeItem = ({ item, onNavigate }) => {
-  console.log('ShoeItem received item:', item); 
-  if (!item) return null;
-=======
 const ShoeItem = ({ item, onNavigate, formattedProducts }) => {
   // console.log('ShoeItem received item:', item); // Confirm the item has a name
 
@@ -15,7 +10,6 @@ const ShoeItem = ({ item, onNavigate, formattedProducts }) => {
   // Prepare product details for navigation
   const productDetails = { productDataByCategory: [item], formattedProducts };
 
->>>>>>> 46ea0a33a3c522c3f275cf86b0f96e692fc27219
   return (
     <Box bg="white">
       <HStack justifyContent="space-between" alignItems="center">

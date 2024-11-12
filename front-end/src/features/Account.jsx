@@ -4,15 +4,19 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_URL } from '../config/index';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';  // Import useDispatch
+import { setUserDetails } from '../store/userSlice';  // Import action to update user details
 
 const { width } = Dimensions.get('window');
 
 const MyAccountScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const {  email, password } = route.params || {}; 
-  const [firstName, setFirstName] = useState(''); 
-  const [lastName, setLastName] = useState(''); 
+  const { email, password } = route.params || {};
+  const dispatch = useDispatch();  // Initialize dispatch
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
@@ -21,22 +25,28 @@ const MyAccountScreen = () => {
   const account = async () => {
     try {
       const response = await axios.post(`${API_URL}/auth/profile`, {
-       
         email,
         password,
-        first_name: firstName,
-        last_name: lastName,
-        phone,
-        gender,
-        
       });
       const { data } = response;
-      setFirstName(data.firstName || firstName);
+
+      // Update Redux store with fetched data
+      dispatch(setUserDetails({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        dob: data.dob,
+        email: data.email,
+        phone: data.phone,
+        gender: data.gender,
+      }));
+
+      // Update local state (if needed)
+      setFirstName(data.firstName);
       setLastName(data.lastName);
       setDob(data.dob);
-      setEmail(data.email);
       setPhone(data.phone);
       setGender(data.gender);
+
     } catch (error) {
       if (error.response) {
         setError(error.response.data.message || 'Failed to fetch account data.');

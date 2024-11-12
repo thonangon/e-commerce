@@ -12,7 +12,8 @@ import { colors } from "../utils/colors";
 import { useAuth } from '../store/redux';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearUser } from '../store/useSlice'; // Adjust the import path as needed
+// import { clearUser } from '../store/useSlice';
+import { logout } from '../store/useSlice';
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -130,7 +131,6 @@ const HomeScreen = () => {
             })
           ))
         ))}
-
         <Modal isOpen={isModalVisible} onClose={() => setModalVisible(false)}>
           <Image source={require('../assets/promotions.png')} alt="Promotional Card" resizeMode="cover" height="200px" />
           <Modal.CloseButton />
@@ -148,7 +148,7 @@ const App = () => {
   console.log('User:', user);
   const handleSignup = () => navigation.navigate('CAROUSEL');
   const handleLogout = () => {
-    dispatch(clearUser());
+    dispatch(logout());
   };
   return (
     <Tab.Navigator
@@ -184,22 +184,18 @@ const App = () => {
           headerTitle: "HELLO",
           headerStyle: { backgroundColor: colors.bg_home },
           headerTintColor: '#fff',
-          headerRight: () =>(
-            user ? (
+          headerRight: () => (
+            user.isAuthenticated ? (
               <>
-                <TouchableOpacity style={styles.row} onPress={handleSignup}>
-                  <MaterialIcons style={{ marginTop: 13 }} name="person" size={26} color="black" />
-                </TouchableOpacity>
+                
                 <TouchableOpacity style={styles.row} onPress={handleLogout}>
                   <MaterialIcons style={{ marginTop: 13 }} name="logout" size={26} color="black" />
                 </TouchableOpacity>
               </>
             ) : (
-              <>
-                <TouchableOpacity style={styles.row} onPress={handleSignup}>
-                  <MaterialIcons style={{ marginTop: 13 }} name="person" size={26} color="black" />
-                </TouchableOpacity>
-              </>
+              <TouchableOpacity style={styles.row} onPress={handleSignup}>
+                <MaterialIcons style={{ marginTop: 13 }} name="person" size={26} color="black" />
+              </TouchableOpacity>
             )
           )
         }}

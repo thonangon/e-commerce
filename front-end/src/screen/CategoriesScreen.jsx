@@ -8,7 +8,7 @@ import axios from 'axios';
 import { API_URL } from '../config/index';
 import Banner from '../components/SoccerMen/Banner';
 
-const HomeScreen = () => {
+  const HomeScreen = () => {
   const navigation = useNavigation();
   const [productDataByCategory, setProductDataByCategory] = useState({});
   const [arriveLists, setArriveLists] = useState([]);
@@ -16,42 +16,15 @@ const HomeScreen = () => {
   const [subCategories, setSubCategories] = useState([]);
   const [subCategoryItems, setSubCategoryItems] = useState([]);
   const mainCategories = useMemo(() => ["Men", "Women", "Kids"], []);
-
   const iconMap = {
     "Shoes": "footsteps-outline",
     "Clothings": "shirt-outline",
     "Accessories": "glasses-outline",
   };
-
-  const fetchByMainCategory = useCallback(async (category) => {
+  const fetchByMainCategory = useCallback(async (selectedCategory) => {
     try {
-      const response = await axios.get(`${API_URL}/product/product/${category}`);
+      const response = await axios.get(`${API_URL}/product/product/${selectedCategory}`);
       if (response.status === 200) {
-        const subCategoryNames = Array.from(
-          new Set(
-            response.data.results.map(product => product.category?.sub_category?.name)
-          )
-        ).filter(Boolean);
-
-        const subCategoryItems = response.data.results.flatMap(product => {
-          if (product.category?.sub_category) {
-            return {
-              subCategoryId: product.category.sub_category.id,
-              subCategoryName: product.category.sub_category.name,
-              categories: product.category.sub_category.categories.map(cat => ({
-                id: cat.id,
-                name: cat.name,
-                image: cat.image ? `${API_URL}${cat.image.replace('http://127.0.0.1:8000', 'http://10.0.2.2:8000')}` : ''
-              }))
-            };
-          }
-          return [];
-        });
-
-        const uniqueSubCategoryItems = Array.from(
-          new Map(subCategoryItems.map(item => [item.subCategoryId, item])).values()
-        );
-
         const formattedProducts = response.data.results.map(product => ({
           category: product.category?.name,
           name: product.productName,
@@ -75,6 +48,30 @@ const HomeScreen = () => {
           });
         });
 
+        const subCategoryNames = Array.from(
+          new Set(
+            response.data.results.map(product => product.category?.sub_category?.name)
+          )
+        ).filter(Boolean);
+
+        const subCategoryItems = response.data.results.flatMap(product => {
+          if (product.category?.sub_category) {
+            return {
+              subCategoryId: product.category.sub_category.id,
+              subCategoryName: product.category.sub_category.name,
+              categories: product.category.sub_category.categories.map(cat => ({
+                id: cat.id,
+                name: cat.name,
+                image: cat.image ? `${API_URL}${cat.image.replace('http://127.0.0.1:8000', 'http://10.0.2.2:8000')}` : ''
+              }))
+            };
+          }
+          return [];
+        });
+        const uniqueSubCategoryItems = Array.from(
+          new Map(subCategoryItems.map(item => [item.subCategoryId, item])).values()
+        );
+
         setSubCategories(subCategoryNames);
         setArriveLists(formattedProducts);
         setProductDataByCategory(productsByCategory);
@@ -86,13 +83,13 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
+
     fetchByMainCategory(selectedCategory);
   }, [fetchByMainCategory, selectedCategory]);
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
   };
-
   return (
     <ScrollView bg="#fff">
       <HStack justifyContent="flex-start" ml={3} space={5} bg="#f8f8f8" py={1}>
@@ -103,20 +100,18 @@ const HomeScreen = () => {
               bold={selectedCategory === category}
               color={selectedCategory === category ? "blue.500" : "gray.500"}
               underline={selectedCategory === category}
-            >
-              {category}
+            >{category}
             </Text>
           </TouchableOpacity>
         ))}
       </HStack>
       <Banner/>
- 
       <VStack space={4} mt={5}>
         {subCategories.map((subcategory, idx) => (
           <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1}>
             <HStack alignItems="center">
               <Icon
-                name={iconMap[subcategory] || "help-circle-outline"} // Fallback icon if not found
+                name={iconMap[subcategory] || "help-circle-outline"} 
                 size={15}
                 color="black"
               />
@@ -134,12 +129,10 @@ const HomeScreen = () => {
                 });
               }}
             />
-
           </HStack>
         ))}
         <Divider />
       </VStack>
-
       <VStack mt={8} px={7}>
         <ProductSection title={`${selectedCategory} - New Arrivals`} products={arriveLists} />
         <ProductSection title="RECENTLY VIEWED ITEMS" products={arriveLists} />
@@ -150,5 +143,4 @@ const HomeScreen = () => {
     </ScrollView>
   );
 };
-
 export default HomeScreen;
