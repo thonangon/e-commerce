@@ -23,7 +23,6 @@ const ShoesScreen = () => {
       image: category.image
     }))
   );
-
   console.log('ShoesScreen products (flattened):', products); // Check the flattened list of products
 
   // Navigation actions
@@ -31,13 +30,7 @@ const ShoesScreen = () => {
     navigation.goBack();
   };
 
-  const handleNavigation = (shoeId, shoeName) => {
-    navigation.navigate('PRODUCTSOCKER', {
-      id: shoeId,
-      name: shoeName,
-      formattedProducts: formattedProducts, // Pass formattedProducts when navigating
-    });
-  };
+  const handleNavigation = (shoeId, shoeName) => {};
 
   return (
     <VStack space={4} p={4} w="100%" maxW="400px" mx="auto">
