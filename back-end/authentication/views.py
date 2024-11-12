@@ -22,6 +22,8 @@ from .utils import Util
 from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 import os
 
@@ -102,12 +104,37 @@ class VerifyEmail(views.APIView):
         except jwt.exceptions.DecodeError:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
         
-class LoginAPIView(generics.GenericAPIView):
+class LoginAPIView(APIView):
     serializer_class = LoginSerializer
+
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # Extract email and password from the request
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        # Authenticate user
+        user = authenticate(username=email, password=password)
+
+        if user is not None:
+            # Check if the user is active and is_staff (admin)
+            if user.is_active :
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                return Response({
+                    'token': access_token,
+                    'email': user.email,
+                    'is_admin': user.is_staff  
+                }, status=status.HTTP_200_OK)
+            else:
+                # If the user is not an admin, return an error
+                return Response({
+                    'error': 'Access denied. You are not authorized to log in as an admin.'
+                }, status=status.HTTP_403_FORBIDDEN)
+        else:
+            # Authentication failed
+            return Response({
+                'error': 'Invalid credentials. Please try again.'
+            }, status=status.HTTP_401_UNAUTHORIZED)
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer

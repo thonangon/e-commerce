@@ -19,14 +19,9 @@ from django.conf import settings
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
-# Application definition
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '@6p-h7#oy4unyb4+(@i&3eq(knbkvjkeyv&@*8+a%f45b@mfm1'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 
@@ -41,11 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'allauth.account',  # Email login
-    # 'allauth.socialaccount',  # OAuth login
-    # 'allauth.socialaccount.providers.google',  # Google login
-    # 'allauth.socialaccount.providers.facebook',  # Facebook login
-    # 'allauth.socialaccount.providers.apple',  # Apple login
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
@@ -124,8 +114,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'shop_db', 
-        'USER': 'postgres',
-        'PASSWORD': 'admin',
+        'USER': 'thona',
+        'PASSWORD': 'djpassword',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -141,12 +131,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
-#    'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAdminUser'
-#    ),
+
 }
-
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
