@@ -28,7 +28,7 @@ const ProductGrid = ({ products }) => (
                 <View 
                 key={idx} 
                 style={{
-                  width: '40%',  // Each item takes roughly half of the row
+                  width: '40%',  
                   marginBottom: 16,
                   
                 }}

@@ -94,6 +94,7 @@ const HomeScreen = () => {
                           scrollToCategory(category.id);
                         }}
 
+
                       >
                         {category.name}
                       </Button>
@@ -211,6 +212,7 @@ const App = () => {
           headerStyle: styles.headerStyle,
         }}
       />
+
       <Tab.Screen
         name="Cart"
         component={Chart}
@@ -260,4 +262,3 @@ const styles = {
 };
 
 export default App;
-

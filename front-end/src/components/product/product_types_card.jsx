@@ -22,7 +22,7 @@ const ShoeItem = ({ item, onNavigate, formattedProducts }) => {
           {item.name || "Unknown Shoe"}
         </Text>
         <IconButton
-          onPress={() => onNavigate(productDetails)} // Pass productDetails, which includes formattedProducts
+          onPress={() => onNavigate(productDetails)} 
           icon={<Icon name="chevron-forward-outline" size={20} color="black" />}
         />
       </HStack>
