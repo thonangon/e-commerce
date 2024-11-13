@@ -3,6 +3,8 @@ import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
 import { Box, VStack, HStack, IconButton, Text, Image, Pressable } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import ScrolMenue from '../components/Header/ScrolMenue';
+import IconsHead from '../components/Header/Iconshead';
 
 const Loading = () => <ActivityIndicator size="large" color="#00C2C2" />;
 const ErrorMessage = ({ message }) => <Text style={styles.error}>Error: {message}</Text>;
@@ -59,18 +61,8 @@ const ProductDetail = () => {
 
     return (
         <Box flex={1} bg="white">
-            <HStack justifyContent="space-between" alignItems="center" px={3} py={2} bg="#00C2C2">
-                <IconButton
-                    icon={<Icon name="chevron-back" size={24} color="white" />}
-                    onPress={() => navigation.goBack()}
-                    variant="unstyled"
-                />
-                <IconButton
-                    icon={<Icon name="search" size={24} color="white" />}
-                    onPress={() => console.log('Search')}
-                    variant="unstyled"
-                />
-            </HStack>
+            <IconsHead></IconsHead>
+            <ScrolMenue></ScrolMenue>
 
             {loading ? (
                 <Loading />
