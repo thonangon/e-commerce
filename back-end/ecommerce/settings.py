@@ -114,8 +114,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'shop_db', 
-        'USER': 'thona',
-        'PASSWORD': 'djpassword',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '5432',
     }
