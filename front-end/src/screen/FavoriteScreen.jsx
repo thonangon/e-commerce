@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
 import { NativeBaseProvider, Box, VStack, HStack, Image, Text, Button, Divider, IconButton, Modal } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation ,useRoute } from '@react-navigation/native';
 import CustomModal from '../components/OptionComponent';
 
 const ShoppingBag = () => {
+  const route = useRoute();
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false);  
   const [showOptionModal, setShowOptionModal] = useState(false);  
@@ -17,35 +18,16 @@ const ShoppingBag = () => {
     navigation.navigate('PLACEORDER');
   };
 
-  const cartItems = [
-    {
-      id: 1,
-      name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS',
-      size: 'Size: 9',
-      color: 'Color: Gold',
-      price: 100.00,
-      quantity: 1,
-      image: require('../assets/fav2.png')
-    },
-    {
-      id: 2,
-      name: 'Copa Gloro II Firm Ground Soccer Cleats',
-      size: 'Size: 8.5',
-      color: 'Color: Black',
-      price: 120.00,
-      quantity: 1,
-      image: require('../assets/fav3.png')
-    },
-    {
-      id: 3,
-      name: 'F50 League Multi-Ground Soccer Cleats',
-      size: 'Size: 7',
-      color: 'Color: White/Blue',
-      price: 90.00,
-      quantity: 2,
-      image: require('../assets/fav1.png')
-    }
-  ];
+  const {
+    image,
+    name,
+    price,
+    description,
+    category,
+  } = route.params || {};
+
+  const cartItems = image ? [{ id: 1, image, name, price, description, category }] : [];
+  
   const optionBodyContent = (
     <>
       <HStack>
@@ -85,13 +67,16 @@ const ShoppingBag = () => {
             <VStack key={item.id}>
               <Box bg="white">
                 <HStack space={3}>
-                  <Image
-                    source={item.image}
+                <Image
+                    source={{ uri: item.image }}
                     alt={item.name}
-                    style={{ width: 150, height: 150 }}
+                    style={{ width: 150, height: 150, borderRadius: 8 }}
                   />
                   <VStack flex="1" justifyContent="space-between">
                     <Text bold fontSize="md">{item.name}</Text>
+                    <Text bold fontSize="md">{item.price}</Text>
+                    <Text bold fontSize="md">{item.description}</Text>
+                    <Text bold fontSize="md">{item.category}</Text>
                     <Button  mb={8}
                       
                       width="90%" 

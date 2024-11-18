@@ -4,23 +4,29 @@ import { Box, Text, IconButton } from 'native-base';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 
-const ProductCard = ({ image, name, price, description,category }) => {
+const ProductCard = ({ image, name, price, description, category }) => {
   const navigation = useNavigation();
   return (
 
-    <Box bg="white" rounded="md" shadow={2} width={250} m={2}>
+    <Box bg="white" rounded="md" width={250} >
       <Image source={{ uri: image }} alt={name} style={{ height: 350, width: '100%' }} />
 
       <IconButton
         icon={<Icon name="favorite-border" size={24} color="black" />}
-        onPress={() => navigation.navigate('FAVORITE')}
+        onPress={() => navigation.navigate('FAVORITE', {
+          image,
+          name,
+          price,
+          description,
+          category
+        })}
         position="absolute"
         top={2}
         right={2}
         zIndex={1}
       />
 
-      {/* Product Details */}
+
       <Box position="absolute" top={220} left={3} padding={2} width="90%">
         <Text fontSize="md" bg="white" color="gray.400" paddingX={1} rounded="sm">
           CODE: {category}

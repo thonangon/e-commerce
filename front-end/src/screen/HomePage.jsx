@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {Image, TouchableOpacity, ImageBackground, View, ScrollView as RNScrollView,TextBase} from 'react-native';
-import {Box, Button, Divider, Modal, HStack, IconButton, VStack, Select, Text,} from 'native-base';
+import { Image, TouchableOpacity, ImageBackground, View, ScrollView as RNScrollView, TextBase } from 'react-native';
+import { Box, Button, Divider, Modal, HStack, IconButton, VStack, Select, Text, } from 'native-base';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
@@ -56,10 +56,10 @@ const HomeScreen = () => {
 
   return (
     <Box flex={1} bg={colors.bg_home}>
-      <Divider mx={1}  />
+      <Divider mx={1} />
       <RNScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScrollContainer}>
         <Box px={2} py={0}>
-          
+
           <HStack mt={1} justifyContent="space-between" alignItems="center" space={1}>
             <VStack>
               <Select
@@ -85,19 +85,19 @@ const HomeScreen = () => {
                   ?.subcategories?.flatMap((subcategory) =>
                     subcategory.categories?.map((category) => (
                       <Button
-                      
-                      key={category.id}
-                      py={1}
-                      variant="outline"
-                      bg={category.id === selectedCategory ? 'black.100' : 'white'}
-                      _text={{ color: category.id === selectedCategory ? "white" : "black" }}
-                      onPress={() => {
-                        setSelectedCategory(category.id);
-                        scrollToCategory(category.id);
-                      }}
-                      
+
+                        key={category.id}
+                        py={1}
+                        variant="outline"
+                        bg={category.id === selectedCategory ? 'black.100' : 'white'}
+                        _text={{ color: category.id === selectedCategory ? "white" : "black" }}
+                        onPress={() => {
+                          setSelectedCategory(category.id);
+                          scrollToCategory(category.id);
+                        }}
+
+
                       >
-                        {/* navigation.navigate('productTypes',{category}) */}
                         {category.name}
                       </Button>
                     ))
@@ -209,6 +209,7 @@ const App = () => {
           headerStyle: styles.headerStyle,
         }}
       />
+
       <Tab.Screen
         name="Cart"
         component={Chart}

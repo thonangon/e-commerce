@@ -8,14 +8,12 @@ const ShoesScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  // Safely access formattedProducts and items
   const formattedProducts = route.params?.formattedProducts || {};
   const { items = [] } = route.params || {};
 
-  console.log('ShoesScreen formattedProducts:', formattedProducts); // Ensure the data is correctly passed
-  console.log('ShoesScreen products:', items); // Check if items are passed
+  console.log('ShoesScreen formattedProducts:', formattedProducts); 
+  console.log('ShoesScreen products:', items); 
 
-  // Flatten products
   const products = items.flatMap(subCategoryItem =>
     subCategoryItem.categories.map(category => ({
       id: category.id,
@@ -24,18 +22,18 @@ const ShoesScreen = () => {
     }))
   );
 
-  console.log('ShoesScreen products (flattened):', products); // Check the flattened list of products
+  console.log('ShoesScreen products (flattened):', products); 
 
-  // Navigation actions
+ 
   const handleCheckIn = () => {
     navigation.goBack();
   };
 
   const handleNavigation = (shoeId, shoeName) => {
-    navigation.navigate('PRODUCTSOCKER', {
+    navigation.navigate( {
       id: shoeId,
       name: shoeName,
-      formattedProducts: formattedProducts, // Pass formattedProducts when navigating
+      formattedProducts: formattedProducts,
     });
   };
 

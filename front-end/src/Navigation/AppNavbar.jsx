@@ -1,6 +1,6 @@
-import {StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../features/LoginScreen';
 import SignupScreen from '../features/SignupScreen';
 import WelcomeScreen from '../screen/WelcomeScreen';
@@ -14,12 +14,10 @@ import SoppingChart from '../screen/ChatScreen';
 import FavoriteScreen from '../screen/FavoriteScreen';
 import AddressDelivery from '../screen/AddressScreen';
 import PlaceOrder from '../screen/PlaceOrderScreen';
-import ProductDetail from '../screen/ProductDetail';
 import ProductShoes from '../screen/Men/ProductShoes';
-import ProductClothing from '../screen/Men/Product_Clothing_Screen';
-import ProductAccesories from '../screen/Men/Product_Accesories_Screen';
 import productDetail from '../screen/ProductDetail'
 import Tabs from './tabBar';
+import NewArrivals from '../screen/Product/New_Arrivals';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,7 +31,7 @@ const App = () => {
       <Stack.Screen
         name="Tabs"
         component={Tabs}
-        options={({navigation}) => ({
+        options={({ navigation }) => ({
           headerLeft: accountUser ? () => <Text></Text> : null,
           headerRight: () => (
             <View style={styles.headerButtons}>
@@ -43,7 +41,7 @@ const App = () => {
                   style={styles.row}
                   onPress={() => navigation.navigate('ProfileScreen')}>
                   <MaterialIcons
-                    style={{marginTop: 13}}
+                    style={{ marginTop: 13 }}
                     name="person"
                     size={26}
                     color="black"
@@ -51,7 +49,7 @@ const App = () => {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.row} onPress={logout}>
                   <MaterialIcons
-                    style={{marginTop: 13}}
+                    style={{ marginTop: 13 }}
                     name="logout"
                     size={26}
                     color="black"
@@ -64,25 +62,24 @@ const App = () => {
         })}
       />
 
-      <Stack.Screen name={'HOMEPAGE'} component={HomePage}  options={{ headerShown: false }} />
+      <Stack.Screen name={'HOMEPAGE'} component={HomePage} options={{ headerShown: false }} />
       <Stack.Screen name={'LOGIN'} component={LoginScreen} />
       <Stack.Screen name="SIGNUP" component={SignupScreen} />
       <Stack.Screen name="CAROUSEL" component={CarouselCard} />
       <Stack.Screen name="CHECKIN" component={CheckIn} />
       <Stack.Screen name="CHANGEPASSWORD" component={ChangePassword} />
       <Stack.Screen name="ACCOUNT" component={Account} />
-      <Stack.Screen name="CATEGORIES" component={Categories}  options={{ headerShown: false }}/>
+      <Stack.Screen name="CATEGORIES" component={Categories} options={{ headerShown: false }} />
       <Stack.Screen name="CHART" component={SoppingChart} />
       <Stack.Screen name="FAVORITE" component={FavoriteScreen} />
       <Stack.Screen name="ADDRESS" component={AddressDelivery} />
       <Stack.Screen name="PLACEORDER" component={PlaceOrder} />
       <Stack.Screen name="PRODUCTSHOES" component={ProductShoes} />
       <Stack.Screen name="PRODUCTDETAIL" component={productDetail} />
-      <Stack.Screen name="PRODUCTCLOTHING" component={ProductClothing} />
-      <Stack.Screen name="PRODUCTACCESORIES" component={ProductAccesories} />
-      <Stack.Screen name="PRODUCTSOCKER" component={ProductDetail} />
+      <Stack.Screen name="NEWARRIVALS" component={NewArrivals}/>
     </Stack.Navigator>
   );
 }
 export default App;
 const styles = StyleSheet.create({});
+

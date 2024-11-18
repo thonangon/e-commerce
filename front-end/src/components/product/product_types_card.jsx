@@ -3,11 +3,9 @@ import { Box, Text, HStack, Divider, IconButton, Image } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ShoeItem = ({ item, onNavigate, formattedProducts }) => {
-  // console.log('ShoeItem received item:', item); // Confirm the item has a name
 
   if (!item) return null;
 
-  // Prepare product details for navigation
   const productDetails = { productDataByCategory: [item], formattedProducts };
 
   return (
@@ -22,7 +20,7 @@ const ShoeItem = ({ item, onNavigate, formattedProducts }) => {
           {item.name || "Unknown Shoe"}
         </Text>
         <IconButton
-          onPress={() => onNavigate(productDetails)} // Pass productDetails, which includes formattedProducts
+          onPress={() => onNavigate(productDetails)} 
           icon={<Icon name="chevron-forward-outline" size={20} color="black" />}
         />
       </HStack>

@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import ProductSection from '../components/product/productSection';
 import axios from 'axios';
 import { API_URL } from '../config/index';
-import Banner from '../components/SoccerMen/Banner';
+import Banner from '../components/Header/Banner';
 
   const HomeScreen = () => {
   const navigation = useNavigation();
