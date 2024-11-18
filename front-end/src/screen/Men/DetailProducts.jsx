@@ -9,12 +9,8 @@ const DetailProduct = () => {
     const navigation = useNavigation();
     const [selectedSize, setSelectedSize] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
-    
-    // Use default values if route.params or specific fields are undefined
     const { name, price, image, colors = [], sizes = [], description,heading,subHeading } = route.params || {};
-
     return (
-        
         <View >
             <IconsHead></IconsHead>
             <ScrollView style={styles.container}>
@@ -28,7 +24,6 @@ const DetailProduct = () => {
                 <Text style={styles.productTitle}>{name}</Text>
                 <Text style={styles.productPrice}>${price}</Text>
                 <Text style={styles.productDescription}>{description}</Text>
-
                 <Text style={styles.sectionTitle}>Size</Text>
                 <View style={styles.sizeContainer}>
                     {(Array.isArray(sizes) ? sizes : []).map((size, index) => (
@@ -44,7 +39,6 @@ const DetailProduct = () => {
                         </TouchableOpacity>
                     ))}
                 </View>
-
                 <Text style={styles.sectionTitle}>Color</Text>
                 <View style={styles.colorContainer}>
                     {(Array.isArray(colors) ? colors : []).map((color, index) => (

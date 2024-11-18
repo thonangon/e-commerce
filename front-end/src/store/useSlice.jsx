@@ -4,7 +4,7 @@ const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
-  isAdmin: false,  // New field to store admin status
+  isAdmin: false,  
   error: null,
 };
 

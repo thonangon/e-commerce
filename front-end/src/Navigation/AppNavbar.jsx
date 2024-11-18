@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginScreen from '../features/LoginScreen';
 import SignupScreen from '../features/SignupScreen';
 import WelcomeScreen from '../screen/WelcomeScreen';
 import HomePage from '../screen/HomePage';
@@ -63,7 +62,6 @@ const App = () => {
       />
 
       <Stack.Screen name={'HOMEPAGE'} component={HomePage} options={{ headerShown: false }} />
-      <Stack.Screen name={'LOGIN'} component={LoginScreen} />
       <Stack.Screen name="SIGNUP" component={SignupScreen} />
       <Stack.Screen name="CAROUSEL" component={CarouselCard} />
       <Stack.Screen name="CHECKIN" component={CheckIn} />
@@ -77,7 +75,6 @@ const App = () => {
       <Stack.Screen name="PRODUCTSHOES" component={ProductShoes} />
       <Stack.Screen name="PRODUCTDETAIL" component={productDetail} />
       <Stack.Screen name="DETAILPRODUCT" component={DetailProducts} />
-
       <Stack.Screen name="NEWARRIVALS" component={NewArrivals}/>
     </Stack.Navigator>
   );

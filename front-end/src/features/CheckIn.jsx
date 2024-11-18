@@ -51,7 +51,7 @@ const LoginScreen = ({ navigation }) => {
         const verificationResponse = await axios.get(verificationUrl);
 
         if (verificationResponse.status === 200) {
-          const userData = { accountUser: { email }, tokenUser: token };
+          const userData = { user: { email }, token: token };
           dispatch(registerSuccess(userData));
           navigation.navigate('ACCOUNT', { email, password });
         } else {
