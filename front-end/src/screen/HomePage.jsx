@@ -36,7 +36,7 @@ const HomeScreen = () => {
     } catch (error) {
       console.error("Error fetching main categories:", error);
     }
-  }, []);
+  }, []);មាន
 
   useEffect(() => {
     fetchMainCategories();

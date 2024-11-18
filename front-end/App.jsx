@@ -6,7 +6,7 @@ import AppNavbar from './src/Navigation/AppNavbar';
 import { NativeBaseProvider } from 'native-base';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { store, persistor } from './src/store/redux'; // Adjusted import to include `persistor`
+import { store, persistor } from './src/store/redux'; 
 
 const Stack = createNativeStackNavigator();
 
