@@ -1,37 +1,70 @@
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import ScrolMenue from '../../components/Header/ScrolMenue';
+import { useRoute } from '@react-navigation/native';
 import IconsHead from '../../components/Header/Iconshead';
+import ProductSession from '../../components/product/productCard';
 
 const DetailProduct = () => {
     const route = useRoute();
-    const navigation = useNavigation();
     const [selectedSize, setSelectedSize] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
-    const { name, price, image, colors = [], sizes = [], description,heading,subHeading } = route.params || {};
-    return (
-        <View >
-            <IconsHead></IconsHead>
-            <ScrollView style={styles.container}>
 
-                <Image source={{ uri: image }} style={styles.productImage} />
+    // Extracting product details from route params
+    const { 
+        name, 
+        price, 
+        images = [], 
+        colors = [], 
+        sizes = [], 
+        description, 
+        heading, 
+        subHeading, 
+        filteredProducts 
+    } = route.params || {};
+
+    // Ensure images is always an array
+    const imageArray = Array.isArray(images) ? images : [images].filter(Boolean); // Convert to array if it's a string
+
+    console.log('sizes:', sizes);
+    console.log('colors:', colors);
+    console.log('images:', imageArray);
+
+    return (
+        <View>
+            <IconsHead />
+            <ScrollView style={styles.container}>
+                {/* Main Product Image */}
+                <Image 
+                    source={{ uri: imageArray[0] || 'https://via.placeholder.com/250' }} 
+                    style={styles.productImage} 
+                />
+
+                {/* Thumbnails for Images */}
                 <ScrollView horizontal style={styles.thumbnailContainer}>
-                    {Array.from({ length: 6 }).map((_, index) => (
-                        <Image key={index} source={{ uri: image }} style={styles.thumbnail} />
+                    {imageArray.map((image, index) => (
+                        <TouchableOpacity key={index} onPress={() => console.log(`Selected Image: ${image}`)}>
+                            <Image 
+                                source={{ uri: image }} 
+                                style={styles.thumbnail} 
+                            />
+                        </TouchableOpacity>
                     ))}
                 </ScrollView>
+
+                {/* Product Details */}
                 <Text style={styles.productTitle}>{name}</Text>
                 <Text style={styles.productPrice}>${price}</Text>
                 <Text style={styles.productDescription}>{description}</Text>
+
+                {/* Size Selector */}
                 <Text style={styles.sectionTitle}>Size</Text>
                 <View style={styles.sizeContainer}>
-                    {(Array.isArray(sizes) ? sizes : []).map((size, index) => (
+                    {sizes.map((size, index) => (
                         <TouchableOpacity
                             key={index}
                             style={[
-                                styles.sizeBox,
-                                selectedSize === size && styles.sizeBoxSelected,
+                                styles.sizeBox, 
+                                selectedSize === size && styles.sizeBoxSelected
                             ]}
                             onPress={() => setSelectedSize(size)}
                         >
@@ -39,22 +72,43 @@ const DetailProduct = () => {
                         </TouchableOpacity>
                     ))}
                 </View>
+
+                {/* Color Selector */}
                 <Text style={styles.sectionTitle}>Color</Text>
                 <View style={styles.colorContainer}>
-                    {(Array.isArray(colors) ? colors : []).map((color, index) => (
+                    {colors.map((color, index) => (
                         <TouchableOpacity
                             key={index}
                             style={[
-                                styles.colorBox,
-                                { backgroundColor: color },
-                                selectedColor === color && styles.colorBoxSelected,
+                                styles.colorBox, 
+                                { backgroundColor: color }, 
+                                selectedColor === color && styles.colorBoxSelected
                             ]}
-                            onPress={() => setSelectedColor(color)}
-                        />
+                            onPress={() => setSelectedColor(color)} 
+                        >
+                            {selectedColor === color && <Text style={styles.colorCheck}>✔</Text>}
+                        </TouchableOpacity>
                     ))}
                 </View>
+
+                {/* Selected Color Preview */}
+                {selectedColor && (
+                    <View style={styles.selectedColorPreview}>
+                        <Text style={styles.previewText}>Selected Color:</Text>
+                        <View 
+                            style={[
+                                styles.colorPreviewBox, 
+                                { backgroundColor: selectedColor }
+                            ]} 
+                        />
+                    </View>
+                )}
+
+                {/* Other Product Information */}
                 <Text>{heading}</Text>
                 <Text>{subHeading}</Text>
+                {/* Product Session Component */}
+                <ProductSession />
             </ScrollView>
         </View>
     );
@@ -62,7 +116,6 @@ const DetailProduct = () => {
 
 const styles = StyleSheet.create({
     container: {
-       
         padding: 16,
     },
     productImage: {
@@ -90,6 +143,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginVertical: 8,
     },
+    productDescription: {
+        fontSize: 16,
+        color: '#666',
+        marginBottom: 16,
+    },
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
@@ -111,7 +169,7 @@ const styles = StyleSheet.create({
         margin: 4,
     },
     sizeBoxSelected: {
-        borderColor: '#000',
+        borderColor: '#000',  // Highlight selected size
     },
     sizeText: {
         fontSize: 16,
@@ -127,9 +185,30 @@ const styles = StyleSheet.create({
         margin: 4,
         borderWidth: 2,
         borderColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     colorBoxSelected: {
-        borderColor: '#000',
+        borderColor: '#000',  // Highlight selected color
+    },
+    colorCheck: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    selectedColorPreview: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 16,
+    },
+    previewText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginRight: 8,
+    },
+    colorPreviewBox: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
     },
 });
 

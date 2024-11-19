@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, TextInput } from 'react-native';
-import { Box, Text, Image, Pressable, VStack } from 'native-base';
+import { ActivityIndicator, FlatList, StyleSheet, TextInput, View } from 'react-native';
+import { Box, Text, Image, Pressable } from 'native-base';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import ScrolMenue from '../components/Header/ScrolMenue';
 import IconsHead from '../components/Header/Iconshead';
@@ -12,36 +12,60 @@ const NoProductsMessage = () => <Text style={styles.noProducts}>No products avai
 const ProductDetail = () => {
     const navigation = useNavigation();
     const route = useRoute();
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const { productDataByCategory = [], formattedProducts = [] } = route.params || {};
+    const [productDetails, setProductDetails] = useState([]);
 
-    const products = (productDataByCategory || []).flatMap(product => {
-        return (formattedProducts || [])
+    const { 
+        productDataByCategory = [], 
+        formattedProducts = [] 
+    } = route.params || {};
+
+    const products = Array.isArray(productDataByCategory) && Array.isArray(formattedProducts)
+    ? productDataByCategory.flatMap(product =>
+        formattedProducts
             .filter(formattedProduct => formattedProduct.category === product.name)
-            .map(matchedFormattedProduct => ({
-                id: matchedFormattedProduct.productId || matchedFormattedProduct.id || `temp-${Math.random()}`,
-                name: matchedFormattedProduct.name || "Unnamed Product",
-                price: matchedFormattedProduct.price || 0,
-                image: matchedFormattedProduct.image || 'https://via.placeholder.com/150',
-                description: matchedFormattedProduct.description || product.description || "No description available",
-                discount: matchedFormattedProduct.discount,
-            }));
-    });
+            .map(matchedProduct => ({
+                id: matchedProduct.id || `temp-${Math.random()}`, // Ensure valid ID
+                name: matchedProduct.name || 'Unnamed Product',
+                price: matchedProduct.price || '0.00',
+                subHeading: matchedProduct.subHeading || 'No subheading available',
+                images: Array.isArray(matchedProduct.image)
+                    ? matchedProduct.image
+                    : [matchedProduct.image || 'https://via.placeholder.com/150'],
+                colors: Array.isArray(matchedProduct.colors)
+                    ? matchedProduct.colors
+                    : [matchedProduct.colors || 'No color available'],
+                sizes: Array.isArray(matchedProduct.size_number)
+                    ? matchedProduct.size_number
+                    : [matchedProduct.size_number || 'No size'],
+                description: matchedProduct.description || 'No description available',
+            }))
+    )
+    : [productDataByCategory];
+    
 
-    // Filter products by search query
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
     const handleSpecificProductPress = (productId) => {
         const product = products.find(p => p.id === productId);
         if (product) {
-            navigation.navigate('DETAILPRODUCT', product);
+            navigation.navigate('DETAILPRODUCT', {
+                name: product.name,
+                price: product.price,
+                images: product.images,
+                colors: product.colors, 
+                sizes: product.sizes, 
+                description: product.description,
+                heading: product.subHeading,
+                subHeading: product.subHeading,
+                
+            });
         }
     };
-
     return (
         <Box flex={1} bg="white">
             <IconsHead onSearch={setSearchQuery} />
@@ -53,7 +77,6 @@ const ProductDetail = () => {
                     onChangeText={setSearchQuery}
                 />
             </Box>
-
             {loading ? (
                 <Loading />
             ) : error ? (
@@ -64,17 +87,19 @@ const ProductDetail = () => {
                 <FlatList
                     data={filteredProducts}
                     keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+                    numColumns={2} // This sets up the two-column layout
                     renderItem={({ item }) => (
-                        <Box width="50%" padding={2} bg="white">
+                        <Box style={styles.productContainer}>
                             <Pressable onPress={() => handleSpecificProductPress(item.id)}>
+                                {/* Check if images is an array and render first image if available */}
                                 <Image
-                                    source={{ uri: item.image }}
+                                    source={{ uri: Array.isArray(item.images) ? item.images[0] : item.images }}
                                     alt={item.name}
                                     style={styles.productImage}
                                     accessibilityLabel={`Image of ${item.name}`}
                                 />
                                 <Box p={3} w="100%">
-                                    <Text style={styles.price}>{item.price}</Text>
+                                    <Text style={styles.price}>${item.price}</Text>
                                     <Text style={styles.productName}>{item.name}</Text>
                                     <Text style={styles.productDescription}>{item.description}</Text>
                                 </Box>
@@ -107,6 +132,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginVertical: 20,
         fontSize: 16,
+    },
+    productContainer: {
+        width: '48%',  // Adjust the width to fit two columns with some space in between
+        padding: 2,
+        backgroundColor: 'white',
+        margin: 4,
     },
     productImage: {
         width: '100%',
