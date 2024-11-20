@@ -6,6 +6,8 @@ const initialState = {
   isAuthenticated: false,
   isAdmin: false,  // New field to store admin status
   error: null,
+  addFavoriteProduct:null,
+  removeFavoriteProduct:null,
 };
 
 const userSlice = createSlice({
@@ -34,6 +36,15 @@ const userSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.isAdmin = false;
+    },
+    addFavoriteProduct: (state,action) => {
+      state.user = action.payload.user
+      state.addFavoriteProduct = true;
+
+    },
+    removeFavoriteProduct: (state,action) => {
+      state.user = action.payload.user;
+      state.removeFavoriteProduct = true;
     },
   },
 });

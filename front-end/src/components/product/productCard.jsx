@@ -3,8 +3,23 @@ import { Image } from 'react-native';
 import { Box, Text, IconButton } from 'native-base';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import { addFavoriteProduct, removeFavoriteProduct } from '../../store/useSlice'
+import { useSelector,useDispatch } from 'react-redux';
+
 
 const ProductCard = ({ image, name, price, description, category }) => {
+  const {fevorite} = useSelector((state) => state.user) 
+  console.log('my favorit:',fevorite);
+  const dispatch = useDispatch();
+  const handleFavorite = (product) => {
+    if (fevorite.includes(product)) {
+      dispatch(removeFavoriteProduct(product));
+    } else {
+      dispatch(addFavoriteProduct(product));
+    }
+  };
+  
+  
   const navigation = useNavigation();
   return (
 
@@ -13,13 +28,8 @@ const ProductCard = ({ image, name, price, description, category }) => {
 
       <IconButton
         icon={<Icon name="favorite-border" size={24} color="black" />}
-        onPress={() => navigation.navigate('FAVORITE', {
-          image,
-          name,
-          price,
-          description,
-          category
-        })}
+        onPress={() => handleFavorite(ProductCard)
+        }
         position="absolute"
         top={2}
         right={2}
