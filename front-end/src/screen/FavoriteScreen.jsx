@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
 import { NativeBaseProvider, Box, VStack, HStack, Image, Text, Button, Divider, IconButton } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation ,useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import CustomModal from '../components/OptionComponent';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { removeFavorite } from '../store/useSlice';
 
 const ShoppingBag = () => {
   const route = useRoute();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [showOptionModal, setShowOptionModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null); // Track the selected item for options modal
+  const [selectedItem, setSelectedItem] = useState(null);
 
   // Get the list of favorite items
   const favorites = useSelector((state) => state.user?.favorites || []);
@@ -23,28 +25,46 @@ const ShoppingBag = () => {
     navigation.navigate('PLACEORDER');
   };
 
+
+  const removeItem = (id) => {
+    dispatch(removeFavorite({ id })); // Payload is an object with id
+  };
+
   const optionBodyContent = (
     <>
-      <HStack>
-        <IconButton
+      <HStack  >
+        <Button
           onPress={handleAddress}
-          icon={<Icon name="create-outline" size={20} color="black" />}
-        />
-        <Text>Edit quantity</Text>
+          leftIcon={<Icon name="create-outline" size={20} color="black" />}
+          variant={'unstyled'}
+        >
+
+          Edit quantity
+        </Button>
       </HStack>
       <Divider mt={2} />
       <HStack>
-        <IconButton
-          icon={<Icon name="ellipsis-vertical-outline" size={20} color="black" />}
-        />
-        <Text>Change Size</Text>
+        <Button
+          leftIcon={<Icon name="ellipsis-vertical-outline" size={20} color="black" colorScheme="white" />}
+          variant="unstyled"
+        >
+          <Text>Change Size</Text>
+        </Button>
+
       </HStack>
       <Divider mt={4} />
       <HStack>
-        <IconButton
-          icon={<Icon name="trash-outline" size={20} color="black" />}
-        />
+        <Button 
+        leftIcon={<Icon name="trash-outline" size={20} color="black" />}
+        onPress={() => {
+          removeItem(selectedItem.id);
+          setShowOptionModal(false);
+          
+        }}
+         variant="unstyled"
+        >
         <Text>Remove from bag</Text>
+        </Button>
       </HStack>
     </>
   );
@@ -66,11 +86,11 @@ const ShoppingBag = () => {
                 <Box bg="white" mb={0.5}>
                   <HStack space={3}>
                     <Image
-                      source={ item.image }  
+                      source={item.image}
                       alt={item.image}
                       style={{ width: 150, height: 150 }}
                     />
-                    
+
                     <VStack flex="1" justifyContent="space-between">
                       <Text bold fontSize="md">{item.name}</Text>
                       <Button
@@ -90,8 +110,8 @@ const ShoppingBag = () => {
                     </VStack>
                     <IconButton
                       onPress={() => {
-                        setSelectedItem(item); 
-                        setShowOptionModal(true); 
+                        setSelectedItem(item);
+                        setShowOptionModal(true);
                       }}
                       icon={<Icon name="ellipsis-vertical-outline" size={20} color="black" />}
                     />
@@ -108,7 +128,7 @@ const ShoppingBag = () => {
         onClose={() => setShowOptionModal(false)}
         title="OPTION"
         bodyContent={optionBodyContent}
-        selectedItem={selectedItem} 
+        selectedItem={selectedItem}
       />
     </NativeBaseProvider>
   );
