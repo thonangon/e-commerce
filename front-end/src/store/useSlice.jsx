@@ -4,10 +4,9 @@ const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
-  isAdmin: false,  // New field to store admin status
+  isAdmin: false,  
   error: null,
-  addFavoriteProduct:null,
-  removeFavoriteProduct:null,
+  favorites: [],
 };
 
 const userSlice = createSlice({
@@ -37,17 +36,22 @@ const userSlice = createSlice({
       state.isAuthenticated = false;
       state.isAdmin = false;
     },
-    addFavoriteProduct: (state,action) => {
-      state.user = action.payload.user
-      state.addFavoriteProduct = true;
-
+    addFavorite: (state, action) => {
+      if (!state.favorites) state.favorites = []; // Ensure `favorites` is initialized
+      const exists = state.favorites.some((product) => product.id === action.payload.id);
+      if (!exists) {
+        state.favorites.push(action.payload);
+      }
+      console.log('User state:', state.favorites); // For debugging purposes (remove before production)    
     },
-    removeFavoriteProduct: (state,action) => {
-      state.user = action.payload.user;
-      state.removeFavoriteProduct = true;
+    removeFavorite: (state, action) => {
+      state.favorites = state.favorites?.filter(
+        (product) => product.id !== action.payload.id
+      );
     },
+    
   },
 });
 
-export const { registerSuccess, loginSuccess, registerError, logout } = userSlice.actions;
+export const { registerSuccess, loginSuccess, registerError, logout,addFavorite, removeFavorite } = userSlice.actions;
 export default userSlice.reducer;

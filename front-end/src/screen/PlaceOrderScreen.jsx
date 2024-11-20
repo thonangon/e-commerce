@@ -11,7 +11,6 @@ const PlaceOrderScreen = () => {
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
       <VStack space={4} p={4}>
 
-        {/* Header */}
         <HStack justifyContent="space-between"  alignItems="center">
           <Text fontSize="lg" fontWeight="bold">PLACE ORDER</Text>
           <Button variant="ghost" colorScheme="coolGray" size="sm" onPresas={handleBack}>
@@ -19,7 +18,6 @@ const PlaceOrderScreen = () => {
           </Button>
         </HStack>
         <Divider my={2} />
-        {/* Order Summary */}
         <VStack space={2} mt={4} >
           <Text fontSize="md" fontWeight="bold">ORDER SUMMARY</Text>
           
@@ -27,7 +25,6 @@ const PlaceOrderScreen = () => {
             <Text>3 items</Text>
             <Text>$350.00</Text>
           </HStack>
-
           <HStack justifyContent="space-between">
             <Text>Shipping</Text>
             <Text>FREE</Text>

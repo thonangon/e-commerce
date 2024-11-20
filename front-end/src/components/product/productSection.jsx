@@ -6,7 +6,6 @@ import { useNavigation ,useRoute } from '@react-navigation/native';
 
 const ProductSection = ({ title, products }) => {
   const route = useRoute();
-  console.log('-----hi---------------',products);
   const navigation = useNavigation();
   return (
 

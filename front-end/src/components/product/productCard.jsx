@@ -2,41 +2,43 @@ import React from 'react';
 import { Image } from 'react-native';
 import { Box, Text, IconButton } from 'native-base';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFavorite, removeFavorite } from '../../store/useSlice';
 import { useNavigation } from '@react-navigation/native';
-import { addFavoriteProduct, removeFavoriteProduct } from '../../store/useSlice'
-import { useSelector,useDispatch } from 'react-redux';
 
-
-const ProductCard = ({ image, name, price, description, category }) => {
-  const {fevorite} = useSelector((state) => state.user) 
-  console.log('my favorit:',fevorite);
+const ProductCard = ({ id, image, name, price, description, category }) => {
   const dispatch = useDispatch();
-  const handleFavorite = (product) => {
-    if (fevorite.includes(product)) {
-      dispatch(removeFavoriteProduct(product));
+  const favorites = useSelector((state) => state.user?.favorites || []);
+
+  const isFavorite = favorites.some((product) => product.id === id);
+  const navigation = useNavigation();
+
+  const handleToggleFavorite = () => {
+    if (isFavorite) {
+      dispatch(removeFavorite({ id }));
     } else {
-      dispatch(addFavoriteProduct(product));
+      navigation.navigate('FAVORITE', { id });
+      dispatch(addFavorite({ id, name, image, price, description, category }));
     }
   };
-  
-  
-  const navigation = useNavigation();
+
   return (
-
-    <Box bg="white" rounded="md" width={250} >
+    <Box bg="white" rounded="md" width={250}>
       <Image source={{ uri: image }} alt={name} style={{ height: 350, width: '100%' }} />
-
       <IconButton
-        icon={<Icon name="favorite-border" size={24} color="black" />}
-        onPress={() => handleFavorite(ProductCard)
+        icon={
+          <Icon
+            name={isFavorite ? 'favorite' : 'favorite-border'}
+            size={24}
+            color={isFavorite ? 'red' : 'black'}
+          />
         }
+        onPress={handleToggleFavorite}
         position="absolute"
         top={2}
         right={2}
         zIndex={1}
       />
-
-
       <Box position="absolute" top={220} left={3} padding={2} width="90%">
         <Text fontSize="md" bg="white" color="gray.400" paddingX={1} rounded="sm">
           CODE: {category}
@@ -53,6 +55,6 @@ const ProductCard = ({ image, name, price, description, category }) => {
       </Box>
     </Box>
   );
-}
+};
 
 export default ProductCard;
