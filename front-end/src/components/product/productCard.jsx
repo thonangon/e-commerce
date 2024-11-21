@@ -2,24 +2,40 @@ import React from 'react';
 import { Image } from 'react-native';
 import { Box, Text, IconButton } from 'native-base';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFavorite, removeFavorite } from '../../store/useSlice';
 
-const ProductCard = ({ id,image, name, price, description,heading,subHeading,colors,size_number,size_name,category }) => {
-  const navigation = useNavigation();
+const ProductCard = ({ id, image, name, price, description, category }) => {
+  const dispatch = useDispatch();
+  const favorites = useSelector((state) => state.user?.favorites || []);
+
+  const isFavorite = favorites.some((product) => product.id === id);
+
+  const handleToggleFavorite = () => {
+    if (isFavorite) {
+      dispatch(removeFavorite({ id }));
+    } else {
+      dispatch(addFavorite({ id, name, image, price, description, category }));
+    }
+  };
+
   return (
-
-    <Box bg="white" rounded="md" width={250} >
+    <Box bg="white" rounded="md" width={250}>
       <Image source={{ uri: image }} alt={name} style={{ height: 350, width: '100%' }} />
-
       <IconButton
-        icon={<Icon name="favorite-border" size={24} color="black" />}
-        onPress={() => navigation.navigate('FAVORITE')}
+        icon={
+          <Icon
+            name={isFavorite ? 'favorite' : 'favorite-border'}
+            size={24}
+            color={isFavorite ? 'red' : 'black'}
+          />
+        }
+        onPress={handleToggleFavorite}
         position="absolute"
         top={2}
         right={2}
         zIndex={1}
       />
-
       <Box position="absolute" top={220} left={3} padding={2} width="90%">
         <Text fontSize="md" bg="white" color="gray.400" paddingX={1} rounded="sm">
           CODE: {category}
@@ -36,6 +52,6 @@ const ProductCard = ({ id,image, name, price, description,heading,subHeading,col
       </Box>
     </Box>
   );
-}
+};
 
 export default ProductCard;

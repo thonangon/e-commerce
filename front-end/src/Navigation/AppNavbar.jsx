@@ -69,7 +69,7 @@ const App = () => {
       <Stack.Screen name="ACCOUNT" component={Account} />
       <Stack.Screen name="CATEGORIES" component={Categories} options={{ headerShown: false }} />
       <Stack.Screen name="CHART" component={SoppingChart} />
-      <Stack.Screen name="FAVORITE" component={FavoriteScreen} />
+      <Stack.Screen name="FAVORITE" component={FavoriteScreen} options={{ title: 'Favorites' }}/>
       <Stack.Screen name="ADDRESS" component={AddressDelivery} />
       <Stack.Screen name="PLACEORDER" component={PlaceOrder} />
       <Stack.Screen name="PRODUCTSHOES" component={ProductShoes} />
