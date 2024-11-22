@@ -37,9 +37,7 @@ const LoginScreen = () => {
         />
       </TouchableOpacity>
       <View style={styles.textContainer}>
-        <Text style={styles.headingText}>Hey, Welcome back to</Text>
-
-  
+        <Text style={styles.headingText}>Hey, Welcome back to</Text>  
       </View>
       {/* form  */}
       <View style={styles.formContainer}>

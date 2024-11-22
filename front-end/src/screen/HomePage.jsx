@@ -235,7 +235,16 @@ const App = () => {
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const styles = {
   horizontalScrollContainer: { paddingVertical: 8 },
-  imageBackground: { width: screenWidth, height: screenHeight, },
+  imageBackground: {
+    height: screenHeight * 0.8, 
+    flex: 1,
+    marginHorizontal: 2, 
+    justifyContent: 'center',
+    overflow: 'hidden', 
+    shadowColor: '#000',
+    shadowOffset: { width:430 , height: 706 },
+    shadowOpacity: 0.3,
+  },
   textContainer: { flex: 1, justifyContent: 'flex-end', paddingBottom: 70 },
   categoryText: {
     position: 'absolute',

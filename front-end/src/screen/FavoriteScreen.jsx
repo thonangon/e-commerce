@@ -14,7 +14,6 @@ const ShoppingBag = () => {
   const [showOptionModal, setShowOptionModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  // Get the list of favorite items
   const favorites = useSelector((state) => state.user?.favorites || []);
 
   const handleAddress = () => {
@@ -27,7 +26,7 @@ const ShoppingBag = () => {
 
 
   const removeItem = (id) => {
-    dispatch(removeFavorite({ id })); // Payload is an object with id
+    dispatch(removeFavorite({ id })); 
   };
 
   const optionBodyContent = (
