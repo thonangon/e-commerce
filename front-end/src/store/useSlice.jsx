@@ -7,10 +7,12 @@ const initialState = {
   isAdmin: false,  
   error: null,
   favorites: [],
+  items:[]
 };
 
 const userSlice = createSlice({
   name: 'user',
+  name:'chart',
   initialState,
   reducers: {
     registerSuccess: (state, action) => {
@@ -47,6 +49,28 @@ const userSlice = createSlice({
     removeFavorite: (state, action) => {
       state.favorites = state.favorites?.filter(
         (product) => product.id !== action.payload.id
+      );
+    },
+    addItem: (state, action) => {
+      const exists = state.items.some((item) => item.id === action.payload.id);
+      if (exists) {
+        state.items = state.items.map((item) =>
+          item.id === action.payload.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        state.items.push({ ...action.payload, quantity: 1 });
+      }
+    },    
+    removeItem: (state, action) => {
+      state.items = state.items.filter(item => item.id !== action.payload.id);
+    },
+    updateItemQuantity: (state, action) => {
+      state.items = state.items.map(item =>
+        item.id === action.payload.id
+          ? { ...item, quantity: action.payload.quantity }
+          : item
       );
     },
     

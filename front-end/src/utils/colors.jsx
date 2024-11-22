@@ -34,5 +34,4 @@ const styles = StyleSheet.create({
   },
   shopNowButtonText: { color: '#fff' },
 });
-
 export default styles;

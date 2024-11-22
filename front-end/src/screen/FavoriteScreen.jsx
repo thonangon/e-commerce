@@ -6,27 +6,16 @@ import { useNavigation } from '@react-navigation/native';
 import CustomModal from '../components/OptionComponent';
 import { useSelector } from 'react-redux';
 
-const ShoppingBag = () => {
+const Favorite = () => {
   const navigation = useNavigation();
   const [showOptionModal, setShowOptionModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null); // Track the selected item for options modal
+  const [selectedItem, setSelectedItem] = useState(null); 
 
-  // Get the list of favorite items
   const favorites = useSelector((state) => state.user?.favorites || []);
-
-  const handleAddress = () => {
-    navigation.navigate('ADDRESS');
-  };
-
-  const handlePlaceOrder = () => {
-    navigation.navigate('PLACEORDER');
-  };
-
   const optionBodyContent = (
     <>
       <HStack>
         <IconButton
-          onPress={handleAddress}
           icon={<Icon name="create-outline" size={20} color="black" />}
         />
         <Text>Edit quantity</Text>
@@ -47,7 +36,6 @@ const ShoppingBag = () => {
       </HStack>
     </>
   );
-
   return (
     <NativeBaseProvider>
       <Box>
@@ -60,44 +48,48 @@ const ShoppingBag = () => {
           </Text>
         ) : (
           <ScrollView>
-            {favorites.map((item) => (
-              <VStack key={item.id}>
-                <Box bg="white" mb={0.5}>
-                  <HStack space={3}>
-                    <Image
-                      source={ item.image }  
-                      alt={item.image}
-                      style={{ width: 150, height: 150 }}
-                    />
-                    
-                    <VStack flex="1" justifyContent="space-between">
-                      <Text bold fontSize="md">{item.name}</Text>
-                      <Button
-                        mb={8}
-                        width="90%"
-                        height="30px"
-                        justifyContent="space-between"
-                        onPress={() => navigation.navigate('CHART')}
-                      >
-                        <HStack>
-                          <Text>ADD TO CHART</Text>
-                          <IconButton
-                            icon={<Icon name="cart-outline" size={20} color="black" />}
-                          />
-                        </HStack>
-                      </Button>
-                    </VStack>
-                    <IconButton
-                      onPress={() => {
-                        setSelectedItem(item); 
-                        setShowOptionModal(true); 
-                      }}
-                      icon={<Icon name="ellipsis-vertical-outline" size={20} color="black" />}
-                    />
-                  </HStack>
-                </Box>
-                <Divider />
-              </VStack>
+            {favorites
+              .filter((item) => item.id) 
+              .map((item) => (
+                <VStack key={item.id}>
+                  <Box bg="white" mb={0.5}>
+                    <HStack space={3}>
+                      <Image
+                        source={{ uri: item.image }}
+                        alt={item.name}
+                        style={{ width: 150, height: 150 }}
+                      />
+                      <VStack flex="1" justifyContent="space-between">
+                        <Text bold fontSize="md">{item.name}</Text>
+                        <Button
+                          mb={8}
+                          width="90%"
+                          height="30px"
+                          justifyContent="space-between"
+                          onPress={() => {
+                            console.log(`Item ID: ${item.id}`);
+                            navigation.navigate('CHART', { itemId: item.id });
+                          }}
+                        >
+                          <HStack justifyContent="space-between" alignItems="center">
+                            <Text>ADD TO BAG</Text>
+                            <IconButton
+                              icon={<Icon name="cart-outline" size={20} color="black" />}
+                            />
+                          </HStack>
+                        </Button>
+                      </VStack>
+                      <IconButton
+                        onPress={() => {
+                          setSelectedItem(item);
+                          setShowOptionModal(true);
+                        }}
+                        icon={<Icon name="ellipsis-vertical-outline" size={20} color="black" />}
+                      />
+                    </HStack>
+                  </Box>
+                  <Divider />
+                </VStack>
             ))}
           </ScrollView>
         )}
@@ -112,5 +104,4 @@ const ShoppingBag = () => {
     </NativeBaseProvider>
   );
 };
-
-export default ShoppingBag;
+export default Favorite;

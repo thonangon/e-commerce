@@ -9,7 +9,7 @@ import CheckIn from '../features/CheckIn';
 import ChangePassword from '../features/ChangPassword';
 import Account from '../features/Account';
 import Categories from '../screen/CategoriesScreen';
-import SoppingChart from '../screen/ChatScreen';
+import ShoppingChart from '../screen/ChatScreen';
 import FavoriteScreen from '../screen/FavoriteScreen';
 import AddressDelivery from '../screen/AddressScreen';
 import PlaceOrder from '../screen/PlaceOrderScreen';
@@ -60,7 +60,6 @@ const App = () => {
           ),
         })}
       />
-
       <Stack.Screen name={'HOMEPAGE'} component={HomePage} options={{ headerShown: false }} />
       <Stack.Screen name="SIGNUP" component={SignupScreen} />
       <Stack.Screen name="CAROUSEL" component={CarouselCard} />
@@ -68,7 +67,7 @@ const App = () => {
       <Stack.Screen name="CHANGEPASSWORD" component={ChangePassword} />
       <Stack.Screen name="ACCOUNT" component={Account} />
       <Stack.Screen name="CATEGORIES" component={Categories} options={{ headerShown: false }} />
-      <Stack.Screen name="CHART" component={SoppingChart} />
+      <Stack.Screen name="CHART" component={ShoppingChart} options={{title: 'SHOPPING BAGE'}}/>
       <Stack.Screen name="FAVORITE" component={FavoriteScreen} options={{ title: 'Favorites' }}/>
       <Stack.Screen name="ADDRESS" component={AddressDelivery} />
       <Stack.Screen name="PLACEORDER" component={PlaceOrder} />
@@ -81,4 +80,3 @@ const App = () => {
 }
 export default App;
 const styles = StyleSheet.create({});
-
