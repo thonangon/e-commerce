@@ -22,6 +22,8 @@ from .utils import Util
 from django.shortcuts import redirect
 from django.http import HttpResponsePermanentRedirect
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 import os
 
@@ -85,34 +87,54 @@ class VerifyEmail(views.APIView):
         token = request.GET.get('token')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-
             user = User.objects.get(id=payload['user_id'])
-
             if not user.is_verified:
                 user.is_verified = True
                 absurl = 'http://' + get_current_site(request).domain + reverse('profile') 
                 data = {
                     'url': absurl,
                     'to_email': user.email,
-                    
                 }
                 user.save()
-
             return Response({'email': 'Successfully activated',
                              'data': data}, status=status.HTTP_200_OK)
-
         except jwt.ExpiredSignatureError:
             return Response({'error': 'Activation link has expired'}, status=status.HTTP_400_BAD_REQUEST)
 
         except jwt.exceptions.DecodeError:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
         
-class LoginAPIView(generics.GenericAPIView):
+class LoginAPIView(APIView):
     serializer_class = LoginSerializer
+
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # Extract email and password from the request
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        # Authenticate user
+        user = authenticate(username=email, password=password)
+
+        if user is not None:
+            # Check if the user is active and is_staff (admin)
+            if user.is_active :
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                return Response({
+                    'token': access_token,
+                    'email': user.email,
+                    'is_admin': user.is_staff  
+                }, status=status.HTTP_200_OK)
+            else:
+                # If the user is not an admin, return an error
+                return Response({
+                    'error': 'Access denied. You are not authorized to log in as an admin.'
+                }, status=status.HTTP_403_FORBIDDEN)
+        else:
+            # Authentication failed
+            return Response({
+                'error': 'Invalid credentials. Please try again.'
+            }, status=status.HTTP_401_UNAUTHORIZED)
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer
@@ -138,9 +160,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
 
 class PasswordTokenCheckAPI(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
-
     def get(self, request, uidb64, token):
-
         redirect_url = request.GET.get('redirect_url')
         try:
             id = smart_str(urlsafe_base64_decode(uidb64))
@@ -161,7 +181,6 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                     
             except UnboundLocalError as e:
                 return Response({'error': 'Token is not valid, please request a new one'}, status=status.HTTP_400_BAD_REQUEST)
-
 class SetNewPasswordAPIView(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
     def patch(self, request):

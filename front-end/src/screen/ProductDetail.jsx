@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView as RNScrollView, ActivityIndicator, FlatList, StyleSheet } from 'react-native';
-import { Box, VStack, HStack, IconButton, Text, Image, Pressable, Center } from 'native-base';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { ActivityIndicator, FlatList, StyleSheet, TextInput, View } from 'react-native';
+import { Box, Text, Image, Pressable } from 'native-base';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import ScrolMenue from '../components/Header/ScrolMenue';
+import IconsHead from '../components/Header/Iconshead';
 
 const Loading = () => <ActivityIndicator size="large" color="#00C2C2" />;
 const ErrorMessage = ({ message }) => <Text style={styles.error}>Error: {message}</Text>;
@@ -11,94 +12,97 @@ const NoProductsMessage = () => <Text style={styles.noProducts}>No products avai
 const ProductDetail = () => {
     const navigation = useNavigation();
     const route = useRoute();
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [productDetails, setProductDetails] = useState([]);
 
-    const { productDataByCategory = [], formattedProducts = [] } = route.params || {};
+    const { 
+        productDataByCategory = [], 
+        formattedProducts = [] 
+    } = route.params || {};
 
-    const products = (productDataByCategory || []).flatMap(product => {
-        const matchingProducts = (formattedProducts || []).filter(
-            formattedProduct => formattedProduct.category === product.name
-        );
+    const products = Array.isArray(productDataByCategory) && Array.isArray(formattedProducts)
+    ? productDataByCategory.flatMap(product =>
+        formattedProducts
+            .filter(formattedProduct => formattedProduct.category === product.name)
+            .map(matchedProduct => ({
+                id: matchedProduct.id || `temp-${Math.random()}`, // Ensure valid ID
+                name: matchedProduct.name || 'Unnamed Product',
+                price: matchedProduct.price || '0.00',
+                subHeading: matchedProduct.subHeading || 'No subheading available',
+                images: Array.isArray(matchedProduct.image)
+                    ? matchedProduct.image
+                    : [matchedProduct.image || 'https://via.placeholder.com/150'],
+                colors: Array.isArray(matchedProduct.colors)
+                    ? matchedProduct.colors
+                    : [matchedProduct.colors || 'No color available'],
+                sizes: Array.isArray(matchedProduct.size_number)
+                    ? matchedProduct.size_number
+                    : [matchedProduct.size_number || 'No size'],
+                description: matchedProduct.description || 'No description available',
+            }))
+    )
+    : [productDataByCategory];
+    
 
-        return matchingProducts.map(matchedFormattedProduct => ({
-            id: product.productId || matchedFormattedProduct.id || `temp-${Math.random()}`,
-            name: matchedFormattedProduct.name || "Unnamed Product",
-            price: matchedFormattedProduct.price || 0,
-            image: matchedFormattedProduct.image || 'https://via.placeholder.com/150',
-            description: matchedFormattedProduct.description || product.description || "No description available",
-            discount: matchedFormattedProduct.discount,
-            isBestSeller: matchedFormattedProduct.isBestSeller,
-        }));
-    });
-
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const handleSpecificProductPress = (productId) => {
+        const product = products.find(p => p.id === productId);
+        if (product) {
+            navigation.navigate('DETAILPRODUCT', {
+                name: product.name,
+                price: product.price,
+                images: product.images,
+                colors: product.colors, 
+                sizes: product.sizes, 
+                description: product.description,
+                heading: product.subHeading,
+                subHeading: product.subHeading,
+                
+            });
+        }
+    };
     return (
         <Box flex={1} bg="white">
-            <HStack justifyContent="space-between" alignItems="center" px={3} py={2} bg="#00C2C2">
-                <IconButton
-                    icon={<Icon name="chevron-back" size={24} color="white" />}
-                    onPress={() => navigation.goBack()}
-                    variant="unstyled"
-                    accessibilityLabel="Go back"
+            <IconsHead onSearch={setSearchQuery} />
+            <Box px={3} py={2}>
+                <TextInput
+                    placeholder="Search products..."
+                    style={styles.searchInput}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
                 />
-                <IconButton
-                    icon={<Icon name="search" size={24} color="white" />}
-                    onPress={() => console.log('Search')}
-                    variant="unstyled"
-                    accessibilityLabel="Search products"
-                />
-            </HStack>
-
-            <RNScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContainer}
-            >
-                <Box pt={1} px={4} mb={3}>
-                    <HStack space={3} alignItems="center">
-                        {["F50", "FUTURE ICONS", "SUPERLITE 3.0", "VL COURT 3.0"].map((item, index) => (
-                            <Center key={index} width={100}>
-                                <Text fontSize="12" color="black">{item}</Text>
-                            </Center>
-                        ))}
-                    </HStack>
-                </Box>
-            </RNScrollView>
-
+            </Box>
             {loading ? (
                 <Loading />
             ) : error ? (
                 <ErrorMessage message={error} />
-            ) : products.length === 0 ? (
+            ) : filteredProducts.length === 0 ? (
                 <NoProductsMessage />
             ) : (
                 <FlatList
-                    data={products}
+                    data={filteredProducts}
                     keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+                    numColumns={2} // This sets up the two-column layout
                     renderItem={({ item }) => (
-                        <Box width="50%" padding={2} bg="white">
-                            <Pressable onPress={() => console.log(`Selected ${item.name}`)}>
+                        <Box style={styles.productContainer}>
+                            <Pressable onPress={() => handleSpecificProductPress(item.id)}>
+                                {/* Check if images is an array and render first image if available */}
                                 <Image
-                                    source={{ uri: item.image }}
+                                    source={{ uri: Array.isArray(item.images) ? item.images[0] : item.images }}
                                     alt={item.name}
                                     style={styles.productImage}
                                     accessibilityLabel={`Image of ${item.name}`}
                                 />
                                 <Box p={3} w="100%">
-                                    <HStack alignItems="center" space={1}>
-                                        {item.discount && (
-                                            <Text style={styles.discountedPrice}>
-                                                {item.price}
-                                            </Text>
-                                        )}
-                                        <Text style={styles.price}>{item.price}</Text>
-                                    </HStack>
+                                    <Text style={styles.price}>${item.price}</Text>
                                     <Text style={styles.productName}>{item.name}</Text>
                                     <Text style={styles.productDescription}>{item.description}</Text>
                                 </Box>
-                                <Pressable style={styles.wishlistIcon}>
-                                    <Icon name="heart-outline" size={18} color="black" accessibilityLabel="Add to wishlist" />
-                                </Pressable>
                             </Pressable>
                         </Box>
                     )}
@@ -109,6 +113,14 @@ const ProductDetail = () => {
 };
 
 const styles = StyleSheet.create({
+    searchInput: {
+        height: 40,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingLeft: 10,
+        marginBottom: 10,
+    },
     error: {
         color: 'red',
         textAlign: 'center',
@@ -121,21 +133,17 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         fontSize: 16,
     },
-    scrollContainer: {
-        paddingVertical: 8,
-        paddingHorizontal: 4,
+    productContainer: {
+        width: '48%',  // Adjust the width to fit two columns with some space in between
+        padding: 2,
+        backgroundColor: 'white',
+        margin: 4,
     },
     productImage: {
         width: '100%',
         height: 200,
         borderRadius: 8,
         marginBottom: 8,
-    },
-    discountedPrice: {
-        fontSize: 16,
-        color: 'red',
-        textDecorationLine: 'line-through',
-        marginRight: 4,
     },
     price: {
         fontSize: 16,
@@ -152,14 +160,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#666',
         marginBottom: 8,
-    },
-    wishlistIcon: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
-        padding: 4,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        borderRadius: 50,
     },
 });
 

@@ -100,7 +100,6 @@ const ShoppingBag = () => {
     </ScrollView>
   );
   
-
   const checkoutFooterContent = (
     <Button
       bottom={7}
@@ -119,7 +118,6 @@ const ShoppingBag = () => {
     </Button>
   );
 
-  // Define option modal content
   const optionBodyContent = (
     <>
       <HStack>
@@ -204,7 +202,6 @@ const ShoppingBag = () => {
         </ScrollView>
         <ButtonClick bg="#fff" color="#00C2C2" title="CHECKOUT" onPress={() => setShowModal(true)} ></ButtonClick>
 
-        {/* Use CustomModal for Checkout */}
         <CustomModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
@@ -213,7 +210,6 @@ const ShoppingBag = () => {
           footerContent={checkoutFooterContent}
         />
 
-        {/* Use CustomModal for Option */}
         <CustomModal
           isOpen={showOptionModal}
           onClose={() => setShowOptionModal(false)}
