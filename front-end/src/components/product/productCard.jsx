@@ -6,10 +6,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite } from '../../store/useSlice';
 import { useNavigation } from '@react-navigation/native';
 
-const ProductCard = ({ id, image, name, price, description, category }) => {
+const ProductCard = ({ id, image, name, price, description, category,color }) => {
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.user?.favorites || []);
-
+  console.log('Favorites from Redux:', favorites);
   const isFavorite = favorites.some((product) => product.id === id);
   const navigation = useNavigation();
 
@@ -17,11 +17,9 @@ const ProductCard = ({ id, image, name, price, description, category }) => {
     if (isFavorite) {
       dispatch(removeFavorite({ id }));
     } else {
-      navigation.navigate('FAVORITE', { id });
-      dispatch(addFavorite({ id, name, image, price, description, category }));
+      dispatch(addFavorite({ id, name, image, price, description, category,color }));
     }
   };
-
   return (
     <Box bg="white" rounded="md" width={250}>
       <Image source={{ uri: image }} alt={name} style={{ height: 350, width: '100%' }} />

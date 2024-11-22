@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState,useEffect} from 'react';
 import {ScrollView} from 'react-native';
 import {
   NativeBaseProvider,
@@ -13,14 +13,19 @@ import {
 } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
-import CustomModal from '../components/OptionComponent'; 
+import CustomModal from '../components/OptionComponent';
 import ButtonClick from '../components/Button';
-import { colors } from "../utils/colors";
+import {colors} from '../utils/colors';
+import {useRoute} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import axios from '../config/index';
+import { API_URL } from '../config/index';
+
 const ShoppingBag = () => {
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false); // Control the main checkout modal visibility
   const [showOptionModal, setShowOptionModal] = useState(false); // Control the Option modal visibility
-
+  const quantity = 1;
   const handleAddress = () => {
     navigation.navigate('ADDRESS');
   };
@@ -29,77 +34,105 @@ const ShoppingBag = () => {
     navigation.navigate('PLACEORDER');
   };
 
-  const cartItems = [
-    {
-      id: 1,
-      name: 'MESSI F50 PRO FIRM GROUND SOCCER CLEATS',
-      size: 'Size: 9',
-      color: 'Color: Gold',
-      price: 100.0,
-      quantity: 1,
-      image: require('../assets/fav2.png'),
-    },
-    {
-      id: 2,
-      name: 'Copa Gloro II Firm Ground Soccer Cleats',
-      size: 'Size: 8.5',
-      color: 'Color: Black',
-      price: 120.0,
-      quantity: 1,
-      image: require('../assets/fav3.png'),
-    },
-    {
-      id: 3,
-      name: 'F50 League Multi-Ground Soccer Cleats',
-      size: 'Size: 7',
-      color: 'Color: White/Blue',
-      price: 90.0,
-      quantity: 2,
-      image: require('../assets/fav1.png'),
-    },
-  ];
+  const route = useRoute();
+  const {itemId} = route.params || {}; // Extract itemId from route params
 
+  // Fetch favorites from Redux store
+  const favorites = useSelector(state => state.user?.favorites || []);
+  console.log('Favorites from Redux:', favorites);
+
+  // Find the specific item based on the passed itemId
+  const selectedItems = itemId
+    ? favorites.filter(item => item.id === itemId)
+    : favorites;
+  console.log('Selected items:', selectedItems);
+  useEffect(() => {
+    const fetchTotal = async () => {
+      try {
+        const response = await axios.post(`${API_URL}/order/order`, {
+          items: selectedItems.map((item) => ({
+            productId: item.id,
+            quantity,
+          })),
+        });
+        setTotal(response.data.total); 
+      } catch (error) {
+        console.error('Error fetching total:', error);
+      }
+    };
+
+    if (selectedItems.length > 0) {
+      fetchTotal();
+    }
+  }, [selectedItems]);
   // Define checkout modal content
   const checkoutBodyContent = (
     <ScrollView>
-      {cartItems.map((item) => (
-        <HStack key={item.id} padding={3} borderBottomWidth={1} borderBottomColor="#E5E5E5">
-          <Image
-            source={item.image}
-            alt={item.name}
-            style={{width: 100, height: 100, borderRadius: 8}}
-          />
-          <VStack marginLeft={3} justifyContent="center">
-            <Text bold fontSize="md">{item.name}</Text>
-            <Text>{item.size} | {item.color}</Text>
-            <Text>Qty: {item.quantity}</Text>
-            <Text bold fontSize="md">${(item.price * item.quantity).toFixed(2)}</Text>
-          </VStack>
-        </HStack>
-      ))}
-      <HStack padding={3} justifyContent="space-between" borderBottomWidth={1} borderBottomColor="#E5E5E5">
+      {selectedItems
+        .filter(item => item.id)
+        .map(item => (
+          <HStack
+            key={item.id}
+            padding={3}
+            borderBottomWidth={1}
+            borderBottomColor="#E5E5E5">
+            <Image
+              source={{uri: item.image}}
+              alt={item.name}
+              size="lg"
+              borderRadius="md"
+              resizeMode="cover"
+            />
+            <VStack marginLeft={3} justifyContent="center">
+              <Text bold fontSize="md">
+                {item.name}
+              </Text>
+              <Text>
+                {item.size} | {item.color}
+              </Text>
+              <Text>Qty: {quantity}</Text>
+              <Text bold fontSize="md">
+                ${(item.price * quantity).toFixed(2)}
+              </Text>
+            </VStack>
+          </HStack>
+        ))}
+      <HStack
+        padding={3}
+        justifyContent="space-between"
+        borderBottomWidth={1}
+        borderBottomColor="#E5E5E5">
         <Text bold>SHIPPING</Text>
         <HStack alignItems="center">
           <Text>Free Delivery</Text>
           <IconButton
             onPress={handleAddress}
-            icon={<Icon name="chevron-forward-outline" size={20} color="black" />}
+            icon={
+              <Icon name="chevron-forward-outline" size={20} color="black" />
+            }
           />
         </HStack>
       </HStack>
       <HStack padding={3} justifyContent="space-between">
         <Text bold>TOTAL</Text>
         <HStack>
-          <Text bold fontSize="lg">${cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}</Text>
+          <Text bold fontSize="lg">
+            $
+            {selectedItems
+              .reduce((total, item) => total + item.price * quantity, 0)
+              .toFixed(2)
+            }
+          </Text>
           <IconButton
-              onPress={handleAddress}
-              icon={<Icon name="chevron-forward-outline" size={20} color="black" />}
-            />
+            onPress={handleAddress}
+            icon={
+              <Icon name="chevron-forward-outline" size={20} color="black" />
+            }
+          />
         </HStack>
       </HStack>
     </ScrollView>
   );
-  
   const checkoutFooterContent = (
     <Button
       bottom={7}
@@ -117,7 +150,6 @@ const ShoppingBag = () => {
       </HStack>
     </Button>
   );
-
   const optionBodyContent = (
     <>
       <HStack>
@@ -125,7 +157,7 @@ const ShoppingBag = () => {
           onPress={handleAddress}
           icon={<Icon name="create-outline" size={20} color="black" />}
         />
-        <Text>Edit quantity</Text>
+        <Text mt={2}>Edit quantity</Text>
       </HStack>
       <Divider mt={2} />
       <HStack>
@@ -134,91 +166,106 @@ const ShoppingBag = () => {
             <Icon name="ellipsis-vertical-outline" size={20} color="black" />
           }
         />
-        <Text>Change Size</Text>
+        <Text mt={2}>Change Size</Text>
       </HStack>
       <Divider mt={4} />
       <HStack>
         <IconButton
           icon={<Icon name="heart-outline" size={20} color="black" />}
         />
-        <Text>Move to favorite</Text>
+        <Text mt={2}>Move to favorite</Text>
       </HStack>
       <Divider mt={4} />
       <HStack>
         <IconButton
           icon={<Icon name="trash-outline" size={20} color="black" />}
         />
-        <Text>Remove from bag</Text>
+        <Text mt={2}>Remove from bag</Text>
       </HStack>
     </>
   );
-
+ 
   return (
     <NativeBaseProvider>
-      <Box>
-        <Text ml={3}>3Item</Text>
-      </Box>
-      <Box safeArea flex="1" bg={colors.bg_button} mt={2}>
-        <ScrollView>
-          {cartItems.map(item => (
-            <VStack key={item.id}>
-              <Box bg="white">
-                <HStack space={3}>
-                  <Image
-                    source={item.image}
-                    alt={item.name}
-                    style={{width: 150, height: 150}}
-                  />
-                  <VStack flex="1" justifyContent="space-between">
-                    <Text bold fontSize="md">
-                      {item.name}
-                    </Text>
-                    <Text>
-                      {item.size} | {item.color}
-                    </Text>
-                    <Text>Qty: {item.quantity}</Text>
-                    <HStack justifyContent="space-between" mb={3}>
-                      <Text>Total (Excl. Tax)</Text>
-                      <Text bold bg="#00C2C2" width="30%" textAlign="center">
-                        ${item.price}
+      <Text ml={3}>{`${selectedItems.length} Items`}</Text>
+      <Box safeArea flex="1" bg={colors.bg_home} mt={2}>
+        {selectedItems.length === 0 ? (
+          <Text textAlign="center" mt={10}>
+            No favorite items found.
+          </Text>
+        ) : (
+          <ScrollView>
+            {selectedItems.map(item => (
+              <VStack key={item.id} mb={0.5}>
+                <Box bg="white" p={4}>
+                  <HStack space={3} alignItems="center">
+                    <Image
+                      source={{uri: item.image}}
+                      alt={item.name}
+                      size="lg"
+                      borderRadius="md"
+                      resizeMode="cover"
+                    />
+                    <VStack flex="1">
+                      <Text bold fontSize="md" isTruncated>
+                        {item.name}
                       </Text>
-                    </HStack>
-                  </VStack>
-                  <IconButton
-                    onPress={() => setShowOptionModal(true)} // Show Option modal on press
-                    icon={
-                      <Icon
-                        name="ellipsis-vertical-outline"
-                        size={20}
-                        color="black"
-                      />
-                    }
-                  />
-                </HStack>
-              </Box>
-              <Divider />
-            </VStack>
-          ))}
-        </ScrollView>
-        <ButtonClick bg="#fff" color="#00C2C2" title="CHECKOUT" onPress={() => setShowModal(true)} ></ButtonClick>
-
-        <CustomModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          title="CHECKOUT"
-          bodyContent={checkoutBodyContent}
-          footerContent={checkoutFooterContent}
-        />
-
-        <CustomModal
-          isOpen={showOptionModal}
-          onClose={() => setShowOptionModal(false)}
-          title="OPTION"
-          bodyContent={optionBodyContent}
-        />
+                      <Text color="gray.500">
+                        Size: {item.size} / Color: {item.color}
+                      </Text>
+                      <Text color="gray.500">Qty: {quantity}</Text>
+                      <Text color="gray.500" numberOfLines={2}>
+                        {item.description}
+                      </Text>
+                      <HStack
+                        justifyContent="space-between"
+                        alignItems="center"
+                        mt={2}>
+                        <Text>Total (Excl. Tax):</Text>
+                        <Text color="white" p={1} bg={colors.bg_home}>
+                          ${item.price}
+                        </Text>
+                      </HStack>
+                    </VStack>
+                    <IconButton
+                      onPress={() => setShowOptionModal(true)}
+                      icon={
+                        <Icon
+                          name="ellipsis-vertical-outline"
+                          size={20}
+                          color="black"
+                        />
+                      }
+                      variant="ghost"
+                    />
+                  </HStack>
+                </Box>
+                <Divider />
+              </VStack>
+            ))}
+          </ScrollView>
+        )}
       </Box>
+      <ButtonClick
+        bg="#fff"
+        color="#00C2C2"
+        title="CHECKOUT"
+        onPress={() => setShowModal(true)}>
+      </ButtonClick>
+      <CustomModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="CHECKOUT"
+        bodyContent={checkoutBodyContent}
+        footerContent={checkoutFooterContent}
+      />
+      <CustomModal
+        isOpen={showOptionModal}
+        onClose={() => setShowOptionModal(false)}
+        title="OPTION"
+        bodyContent={optionBodyContent}
+      />
     </NativeBaseProvider>
   );
 };
-
 export default ShoppingBag;
