@@ -7,7 +7,7 @@ import CustomModal from '../components/OptionComponent';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFavorite } from '../store/useSlice';
 
-const Favorite = () => {
+const ShoppingBag = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -20,6 +20,9 @@ const Favorite = () => {
     navigation.navigate('ADDRESS');
   };
 
+  const handlePlaceOrder = () => {
+    navigation.navigate('PLACEORDER');
+  };
 
 
   const removeItem = (id) => {
@@ -64,6 +67,7 @@ const Favorite = () => {
       </HStack>
     </>
   );
+
   return (
     <NativeBaseProvider>
       <Box>
@@ -76,48 +80,44 @@ const Favorite = () => {
           </Text>
         ) : (
           <ScrollView>
-            {favorites
-              .filter((item) => item.id) 
-              .map((item) => (
-                <VStack key={item.id}>
-                  <Box bg="white" mb={0.5}>
-                    <HStack space={3}>
-                      <Image
-                        source={{ uri: item.image }}
-                        alt={item.name}
-                        style={{ width: 150, height: 150 }}
-                      />
-                      <VStack flex="1" justifyContent="space-between">
-                        <Text bold fontSize="md">{item.name}</Text>
-                        <Button
-                          mb={8}
-                          width="90%"
-                          height="30px"
-                          justifyContent="space-between"
-                          onPress={() => {
-                            console.log(`Item ID: ${item.id}`);
-                            navigation.navigate('CHART', { itemId: item.id });
-                          }}
-                        >
-                          <HStack justifyContent="space-between" alignItems="center">
-                            <Text>ADD TO BAG</Text>
-                            <IconButton
-                              icon={<Icon name="cart-outline" size={20} color="black" />}
-                            />
-                          </HStack>
-                        </Button>
-                      </VStack>
-                      <IconButton
-                        onPress={() => {
-                          setSelectedItem(item);
-                          setShowOptionModal(true);
-                        }}
-                        icon={<Icon name="ellipsis-vertical-outline" size={20} color="black" />}
-                      />
-                    </HStack>
-                  </Box>
-                  <Divider />
-                </VStack>
+            {favorites.map((item) => (
+              <VStack key={item.id}>
+                <Box bg="white" mb={0.5}>
+                  <HStack space={3}>
+                    <Image
+                      source={item.image}
+                      alt={item.image}
+                      style={{ width: 150, height: 150 }}
+                    />
+
+                    <VStack flex="1" justifyContent="space-between">
+                      <Text bold fontSize="md">{item.name}</Text>
+                      <Button
+                        mb={8}
+                        width="90%"
+                        height="30px"
+                        justifyContent="space-between"
+                        onPress={() => navigation.navigate('CHART')}
+                      >
+                        <HStack>
+                          <Text>ADD TO CHART</Text>
+                          <IconButton
+                            icon={<Icon name="cart-outline" size={20} color="black" />}
+                          />
+                        </HStack>
+                      </Button>
+                    </VStack>
+                    <IconButton
+                      onPress={() => {
+                        setSelectedItem(item);
+                        setShowOptionModal(true);
+                      }}
+                      icon={<Icon name="ellipsis-vertical-outline" size={20} color="black" />}
+                    />
+                  </HStack>
+                </Box>
+                <Divider />
+              </VStack>
             ))}
           </ScrollView>
         )}
@@ -132,4 +132,5 @@ const Favorite = () => {
     </NativeBaseProvider>
   );
 };
-export default Favorite;
+
+export default ShoppingBag;

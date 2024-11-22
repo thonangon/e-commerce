@@ -18,6 +18,7 @@ const ProductCard = ({ id, image, name, price, description, category,color }) =>
       dispatch(removeFavorite({ id }));
     } else {
       dispatch(addFavorite({ id, name, image, price, description, category,color }));
+      navigation.navigate('FAVORITE');
     }
   };
   return (

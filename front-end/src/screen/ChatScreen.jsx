@@ -1,5 +1,5 @@
-import React, {useCallback, useState,useEffect} from 'react';
-import {ScrollView} from 'react-native';
+import React, { useCallback, useState, useEffect } from 'react';
+import { ScrollView } from 'react-native';
 import {
   NativeBaseProvider,
   Box,
@@ -12,14 +12,15 @@ import {
   IconButton,
 } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import CustomModal from '../components/OptionComponent';
 import ButtonClick from '../components/Button';
-import {colors} from '../utils/colors';
-import {useRoute} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import { colors } from '../utils/colors';
+import { useRoute } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from '../config/index';
 import { API_URL } from '../config/index';
+import { removeFavorite } from '../store/useSlice';
 
 const ShoppingBag = () => {
   const navigation = useNavigation();
@@ -29,17 +30,23 @@ const ShoppingBag = () => {
   const handleAddress = () => {
     navigation.navigate('ADDRESS');
   };
+  const Dispatch = useDispatch();
 
   const handlePlaceOrder = () => {
     navigation.navigate('PLACEORDER');
   };
 
+
   const route = useRoute();
-  const {itemId} = route.params || {}; // Extract itemId from route params
+  const { itemId } = route.params || {}; // Extract itemId from route params
 
   // Fetch favorites from Redux store
   const favorites = useSelector(state => state.user?.favorites || []);
   console.log('Favorites from Redux:', favorites);
+
+  const RemoveItem = (id) => {
+    Dispatch(removeFavorite({ id })); // Dispatch the action with the specific item ID
+  };
 
   // Find the specific item based on the passed itemId
   const selectedItems = itemId
@@ -55,7 +62,7 @@ const ShoppingBag = () => {
             quantity,
           })),
         });
-        setTotal(response.data.total); 
+        setTotal(response.data.total);
       } catch (error) {
         console.error('Error fetching total:', error);
       }
@@ -68,16 +75,14 @@ const ShoppingBag = () => {
   // Define checkout modal content
   const checkoutBodyContent = (
     <ScrollView>
-      {selectedItems
-        .filter(item => item.id)
-        .map(item => (
+      {selectedItems.map(item => (
           <HStack
             key={item.id}
             padding={3}
             borderBottomWidth={1}
             borderBottomColor="#E5E5E5">
             <Image
-              source={{uri: item.image}}
+              source={{ uri: item.image }}
               alt={item.name}
               size="lg"
               borderRadius="md"
@@ -179,12 +184,19 @@ const ShoppingBag = () => {
       <HStack>
         <IconButton
           icon={<Icon name="trash-outline" size={20} color="black" />}
+          onPress={() => {
+            RemoveItem(selectedItems[0]?.id); // Pass the correct ID from selected items
+            setShowOptionModal(false);
+          }}
+
         />
+
+
         <Text mt={2}>Remove from bag</Text>
       </HStack>
     </>
   );
- 
+
   return (
     <NativeBaseProvider>
       <Text ml={3}>{`${selectedItems.length} Items`}</Text>
@@ -200,7 +212,7 @@ const ShoppingBag = () => {
                 <Box bg="white" p={4}>
                   <HStack space={3} alignItems="center">
                     <Image
-                      source={{uri: item.image}}
+                      source={{ uri: item.image }}
                       alt={item.name}
                       size="lg"
                       borderRadius="md"
