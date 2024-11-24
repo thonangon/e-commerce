@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import User
+from .models import *
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
@@ -10,23 +10,18 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth import get_user_model
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        max_length=68, min_length=6, write_only=True)
-
-    default_error_messages = {
-        'username': 'The username should only contain alphanumeric characters'}
+    password = serializers.CharField(max_length=68, min_length=6, write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password']
+        fields = ['email', 'password']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
-        username = attrs.get('username', '')
-
-        if not username.isalnum():
-            raise serializers.ValidationError(
-                self.default_error_messages)
+        if not serializers.EmailField().run_validation(email):
+            raise serializers.ValidationError({
+                'email': 'Enter a valid email address'
+            })
         return attrs
 
     def create(self, validated_data):
@@ -34,13 +29,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model= User
-        fields = ['user', 'date_of_birth', 'phone_number', 'gender']
+        model= Profile
+        fields = ['first_name','last_name','user', 'date_of_birth', 'phone_number', 'gender']
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = [ 'date_of_birth', 'phone_number', 'gender']
+        fields = ['first_name','last_name', 'date_of_birth', 'phone_number', 'gender']
 
 class EmailVerificationSerializer(serializers.ModelSerializer):
     token = serializers.CharField(max_length=555)

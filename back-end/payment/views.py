@@ -1,83 +1,106 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import CardInformationSerializer
-import stripe
 from rest_framework import status
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
+from .models import UserPayment
+from django.contrib.auth.models import User  # Replace with your custom User model if necessary
+import stripe
+from datetime import datetime, timedelta
+from django.contrib.auth import get_user_model
 
-stripe.api_key = settings.STRIPE_SECRET_KEY  # Move this out of the function to avoid reassigning each time
+User = get_user_model()  
 
-class PaymentAPI(APIView):
-    serializer_class = CardInformationSerializer
+stripe.api_key = settings.STRIPE_SECRET_KEY  
+
+class StripePaymentView(APIView):
+    def get(self, request):
+        try:
+            user_payments = UserPayment.objects.select_related('user').all()
+            payments_data = [
+                {
+                    "id": payment.id,
+                    "user": payment.user.id,
+                    "email": payment.user.email,
+                    "amount": payment.amount,
+                    "currency": payment.currency,
+                    "payment_method": payment.payment_method,
+                    "created_at": payment.created_at,
+                    "updated_at": payment.updated_at,
+                }
+                for payment in user_payments
+            ]
+            return Response({'message': 'success', 'data': payments_data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': 'error', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        response = {}
-        if serializer.is_valid():
-            data_dict = serializer.validated_data
-            response = self.stripe_card_payment(data_dict=data_dict)
-        else:
-            response = {'errors': serializer.errors, 'status': status.HTTP_400_BAD_REQUEST}
-                
-        return Response(response)
+        validated_data = request.data
 
-    def stripe_card_payment(self, data_dict):
         try:
-            # Create a Payment Method for the card
-            payment_method = stripe.PaymentMethod.create(
-                type="card",
-                card={
-                    "number": data_dict['card_number'],
-                    "exp_month": data_dict['expiry_month'],
-                    "exp_year": data_dict['expiry_year'],
-                    "cvc": data_dict['cvc'],
-                }
-            )
+            # Create customer in Stripe
+            customer = stripe.Customer.create(email=validated_data['email'])
 
-            # Create a customer and attach the payment method to the customer
-            customer = stripe.Customer.create(
-                email=data_dict['email'],
-                payment_method=payment_method.id,
-                invoice_settings={"default_payment_method": payment_method.id}
-            )
-
-            # Create a Payment Intent
+            # Create PaymentIntent
             payment_intent = stripe.PaymentIntent.create(
-                amount=10000,  # Adjust amount as needed
-                currency='inr',
+                amount=int(validated_data['amount'] * 100),  # Convert to cents
+                currency='usd',
+                payment_method_types=['card'],
                 customer=customer.id,
-                payment_method=payment_method.id,
-                confirm=True  # Automatically confirm the payment intent
+                receipt_email=validated_data['email'],
             )
 
-            # Confirm the payment
-            if payment_intent['status'] == 'succeeded':
-                response = {
-                    'message': "Card Payment Success",
-                    'status': status.HTTP_200_OK,
-                    "payment_intent": payment_intent,
-                }
-            else:
-                response = {
-                    'message': "Card Payment Failed",
-                    'status': status.HTTP_400_BAD_REQUEST,
-                    "payment_intent": payment_intent,
-                }
-        except stripe.error.CardError as e:
-            err = e.error
-            response = {
-                'error': "Your card number is incorrect",
-                'status': status.HTTP_400_BAD_REQUEST,
-                "stripe_error": {
-                    "code": err.code,
-                    "message": err.message,
-                    "status": "Failed"
-                }
-            }
-        except Exception as e:
-            response = {
-                'error': str(e),
-                'status': status.HTTP_500_INTERNAL_SERVER_ERROR,
-            }
-        
-        return response
+            # Create UserPayment record
+            user = User.objects.filter(email=validated_data['email']).first()
+            if user:
+                UserPayment.objects.create(
+                    user=user,
+                    payment_intent_id=payment_intent.id,
+                    amount=payment_intent.amount / 100,  # Convert to dollars
+                    currency=payment_intent.currency,
+                    payment_method='card',
+                )
+
+            return Response({
+                'success': True,
+                'client_secret': payment_intent.client_secret,
+            }, status=status.HTTP_201_CREATED)
+
+        except stripe.error.StripeError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class HandlePaymentSuccess(APIView):
+    def post(self, request):
+        try:
+            validated_data = request.data
+            payment_intent = stripe.PaymentIntent.retrieve(validated_data['payment_intent_id'])
+
+            if payment_intent.status == 'succeeded':
+                user = User.objects.filter(email=validated_data['email']).first()
+                if user:
+                    # Update user subscription details
+                    next_charge_date = now()
+                    if validated_data.get('plan') == 'Pro':
+                        next_charge_date = next_charge_date + timedelta(days=30)
+
+                    user.profile.save()
+
+                    return Response({
+                        'status': True,
+                        'message': 'Payment successful. Post count reset for user.',
+                        'next_charge_date': next_charge_date,
+                        'payment_date': now(),
+                        'amount': payment_intent.amount / 100,
+                        'payment_method': 'card',
+                    }, status=status.HTTP_200_OK)
+                return Response({'status': False, 'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response({
+                'status': False,
+                'message': 'Payment not successful.',
+                'payment_intent_status': payment_intent.status,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        except stripe.error.StripeError as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
