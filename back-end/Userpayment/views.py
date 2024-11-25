@@ -9,6 +9,7 @@ from django.contrib.auth.models import User  # Replace with your custom User mod
 import stripe
 from datetime import datetime, timedelta
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 
 User = get_user_model()  
 
@@ -53,6 +54,7 @@ class StripePaymentView(APIView):
 
             # Create UserPayment record
             user = User.objects.filter(email=validated_data['email']).first()
+            print(f'User: {user}')
             if user:
                 UserPayment.objects.create(
                     user=user,
@@ -104,3 +106,25 @@ class HandlePaymentSuccess(APIView):
 
         except stripe.error.StripeError as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class StripeWebhookView(APIView):
+    def post(self, request):
+        payload = request.body
+        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+        event = None
+
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            )
+        except ValueError:
+            return JsonResponse({'error': 'Invalid payload'}, status=400)
+        except stripe.error.SignatureVerificationError:
+            return JsonResponse({'error': 'Invalid signature'}, status=400)
+
+        if event['type'] == 'payment_intent.succeeded':
+            payment_intent = event['data']['object']
+            print(f"PaymentIntent succeeded: {payment_intent['id']}")
+
+        return JsonResponse({'status': 'success'})

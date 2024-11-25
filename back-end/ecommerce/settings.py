@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'order',
     'orderDetail',
     'discount',
-    'payment'
+    'Userpayment'
     
 ]
 
@@ -202,5 +202,6 @@ EMAIL_HOST_PASSWORD = os.environ.get('takeo437$')
 
 STRIPE_PUBLIC_KEY = 'pk_test_51PZ1M92KMJfWGuxDbOviEzE7eldlNfD2vLtPaweyyJPTAJEmEy7APiGipQYtve6F0MNP4iJTAxK15MAS9R25DRyG00GuyPPGZh'
 STRIPE_SECRET_KEY = 'sk_test_51PZ1M92KMJfWGuxDDZfS9cMw1wyXKoJvL2pudltJZUDIzkalQq9wr4KHHD4xcf8XayDjcboNWmK62omv4KCKQcYG00WsyEcb6c'
+STRIPE_WEBHOOK_SECRET=''
 # STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
 DEFAULT_CURRENCY = 'USD'
