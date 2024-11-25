@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'colorOnProduct',
     'order',
     'orderDetail',
-    'discount'
+    'discount',
+    'Userpayment'
     
 ]
 
@@ -126,6 +127,9 @@ DATABASES = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     'PAGE_SIZE': 10,
     'NON_FIELD_ERRORS_KEY': 'error',
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -185,8 +189,17 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-EMAIL_USE_TLS = True  
-EMAIL_HOST = 'smtp.gmail.com'  
-EMAIL_HOST_USER = ''  
-EMAIL_HOST_PASSWORD = ''  
-EMAIL_PORT = 587  
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get('takeothona61@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('takeo437$')
+
+# Stripe================================
+
+STRIPE_PUBLIC_KEY = 'pk_test_51PZ1M92KMJfWGuxDbOviEzE7eldlNfD2vLtPaweyyJPTAJEmEy7APiGipQYtve6F0MNP4iJTAxK15MAS9R25DRyG00GuyPPGZh'
+STRIPE_SECRET_KEY = 'sk_test_51PZ1M92KMJfWGuxDDZfS9cMw1wyXKoJvL2pudltJZUDIzkalQq9wr4KHHD4xcf8XayDjcboNWmK62omv4KCKQcYG00WsyEcb6c'
+STRIPE_WEBHOOK_SECRET=''
+# STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
+DEFAULT_CURRENCY = 'USD'

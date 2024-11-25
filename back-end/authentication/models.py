@@ -5,7 +5,6 @@ from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 
 class UserManager(BaseUserManager):
-
     def create_user(self, email, password=None,**extra_fields):
         if email is None:
             raise TypeError('Users should have a Email')
