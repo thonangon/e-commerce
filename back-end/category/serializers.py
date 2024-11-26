@@ -18,7 +18,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'main_category', 'categories']
 
 class MainCategorySerializer(serializers.ModelSerializer):
-    subcategories = SubCategorySerializer(many=True,read_only=True)  # Use the related name 'subcategories'
+    subcategories = SubCategorySerializer(many=True,read_only=True)  
 
     class Meta:
         model = MainCategory

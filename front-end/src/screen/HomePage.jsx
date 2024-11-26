@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Image, TouchableOpacity, ImageBackground, View, ScrollView as RNScrollView, TextBase,Dimensions } from 'react-native';
+import { Image, TouchableOpacity, ImageBackground, View, ScrollView as RNScrollView, TextBase, Dimensions } from 'react-native';
 import { Box, Button, Divider, Modal, HStack, IconButton, VStack, Select, Text, } from 'native-base';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -23,7 +23,7 @@ const HomeScreen = () => {
   const scrollViewRef = useRef(null);
   const categoryOffsets = useRef({});
   const [selectedMainCategory, setSelectedMainCategory] = useState(null);
-  
+
 
   const fetchMainCategories = useCallback(async () => {
     try {
@@ -189,8 +189,8 @@ const App = () => {
           headerRight: () => (
             user.isAuthenticated ? (
               <>
-                
-                 <HStack space={4} alignItems="center">
+
+                <HStack space={4} alignItems="center">
                   <Text style={{ color: '#fff', marginRight: 10 }}>{user.user.email}</Text>
                   <TouchableOpacity style={styles.row} onPress={handleLogout}>
                     <MaterialIcons name="logout" size={26} color="white" />
@@ -221,7 +221,7 @@ const App = () => {
           headerTitle: "SHOPPING BAG",
           headerStyle: styles.headerStyle,
         }}
-        
+
       />
       <Tab.Screen
         name="Favorites"
@@ -238,7 +238,16 @@ const App = () => {
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const styles = {
   horizontalScrollContainer: { paddingVertical: 8 },
-  imageBackground: { width: screenWidth,height: screenHeight, },
+  imageBackground: {
+    height: screenHeight * 0.8, 
+    flex: 1,
+    marginHorizontal: 2, 
+    justifyContent: 'center',
+    overflow: 'hidden', 
+    shadowColor: '#000',
+    shadowOffset: { width:430 , height: 706 },
+    shadowOpacity: 0.3,
+  },
   textContainer: { flex: 1, justifyContent: 'flex-end', paddingBottom: 70 },
   categoryText: {
     position: 'absolute',

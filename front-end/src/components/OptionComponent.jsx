@@ -1,12 +1,12 @@
 import React from 'react';
-import { Modal, Button, HStack, IconButton, Text, Divider, Image } from 'native-base';
+import { Modal } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 const CustomModal = ({ isOpen, onClose, title, bodyContent, footerContent }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="full">
       <Modal.Content
         maxWidth="100%"
-        height="50%"
+        height="50%" 
         marginBottom={0}
         position="absolute"
         bottom="0"

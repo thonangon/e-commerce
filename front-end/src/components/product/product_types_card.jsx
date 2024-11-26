@@ -3,11 +3,9 @@ import { Box, Text, HStack, Divider, IconButton, Image } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ShoeItem = ({ item, onNavigate, formattedProducts }) => {
-  // console.log('ShoeItem received item:', item); // Confirm the item has a name
 
   if (!item) return null;
 
-  // Prepare product details for navigation
   const productDetails = { productDataByCategory: [item], formattedProducts };
 
   return (

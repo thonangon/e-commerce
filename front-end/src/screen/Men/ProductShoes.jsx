@@ -11,7 +11,6 @@ const ShoesScreen = () => {
   const formattedProducts = route.params?.formattedProducts || {};
   const { items = [] } = route.params || {};
 
-  // console.log('ShoesScreen formattedProducts:', formattedProducts); 
   console.log('ShoesScreen products:', items); 
 
   const products = items.flatMap(subCategoryItem =>
@@ -24,7 +23,6 @@ const ShoesScreen = () => {
 
   console.log('ShoesScreen products (flattened):', products); 
 
- 
   const handleCheckIn = () => {
     navigation.goBack();
   };
