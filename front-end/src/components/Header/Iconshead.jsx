@@ -1,25 +1,36 @@
-import { HStack ,IconButton} from 'native-base';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { HStack, IconButton, Box, Center, Text } from 'native-base';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-const IconsHead = ({ onSearch }) => {
+const IconsHead = ({ title, subtitle, bgColor = "#008080", onLeftPress, onRightPress }) => {
     const navigation = useNavigation();
     return (
-        <HStack justifyContent="space-between" alignItems="center" px={3} py={2} bg="#00C2C2">
-            <IconButton
-                icon={<Icon name="chevron-back" size={24} color="white" />}
-                onPress={() => navigation.goBack()}
-                variant="unstyled"
-                accessibilityLabel="Go back"
-            />
-            <IconButton
-                icon={<Icon name="search" size={24} color="white" />}
-                onPress={() => console.log('Search triggered')} // Modify to open a search bar if needed
-                variant="unstyled"
-                accessibilityLabel="Search products"
-            />
-        </HStack>
+        <Box bg={bgColor} py={4}>
+            <HStack alignItems="center" justifyContent="space-between" px={4}>
+                <IconButton
+                    icon={<Ionicons name="chevron-back" size={24} color="white" />}
+                    onPress={() => navigation.goBack()}
+                    variant="unstyled"
+                    accessibilityLabel="Go back"
+                    borderRadius="full"
+                />
+                <Center>
+                    <Text color="white" fontSize="lg" fontWeight="bold">
+                        {title}
+                    </Text>
+                    {subtitle && (
+                        <Text color="gray.300" fontSize="sm">
+                            {subtitle}
+                        </Text>
+                    )}
+                </Center>
+                <IconButton
+                    icon={<Ionicons name="search" size={24} color="white" />}
+                    onPress={onRightPress}
+                    borderRadius="full"
+                />
+            </HStack>
+        </Box>
     );
 };
-
 
 export default IconsHead;

@@ -57,10 +57,11 @@ const HomeScreen = () => {
   };
 
   return (
-    <Box flex={1} bg={colors.bg_home} style={{ paddingHorizontal: 2 }}>
+    <Box flex={1} bg={colors.bg_home}>
       <Divider mx={1} />
       <RNScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScrollContainer}>
         <Box px={2} py={0}>
+
 
           <HStack mt={1} justifyContent="space-between" alignItems="center" space={1}>
             <VStack>
@@ -109,13 +110,13 @@ const HomeScreen = () => {
         {categories.map((mainCategory) => (
           mainCategory.subcategories?.map((subcategory) => (
             subcategory.categories?.map((category) => {
-              const imageUrl = category.image ? `http://10.0.2.2:8000${category.image}` : null;
+              const imageUrl = category.image ? `http://10.0.2.2:8000${category.image}` : require('../assets/0.png');
+
+
+
               return (
-                <View >
-                  <ImageBackground
-                    source={imageUrl ? { uri: imageUrl } : require('../assets/fav2.png')}
-                    style={styles.imageBackground}
-                  >
+                <View key={category.id} onLayout={(event) => setCategoryOffset(category.id, event)}>
+                  <ImageBackground source={imageUrl ? { uri: imageUrl } : require('../assets/fav2.png')} style={styles.imageBackground} resizeMode="cover">
                     <View style={styles.textContainer}>
                       <Text style={styles.categoryText}>{category.name}</Text>
                       <TouchableOpacity
@@ -123,12 +124,11 @@ const HomeScreen = () => {
                         onPress={() => navigation.navigate('CATEGORIES')}
                       >
                         <Text style={styles.shopNowButtonText}>SHOP NOW</Text>
-                        <IconButton icon={<Icon name="arrow-forward" size={20} color="white" />} />
+                        <IconButton icon={<Icon name="arrow-forward" size={20} color="white" />} style={{ marginLeft: 10 }} />
                       </TouchableOpacity>
                     </View>
                   </ImageBackground>
                 </View>
-
               );
             })
           ))
@@ -141,6 +141,7 @@ const HomeScreen = () => {
     </Box>
   );
 };
+
 
 const Tab = createBottomTabNavigator();
 const App = () => {
@@ -238,11 +239,16 @@ const App = () => {
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const styles = {
-
+  horizontalScrollContainer: { paddingVertical: 8 },
   imageBackground: {
     height: screenHeight * 0.8,
     flex: 1,
-    
+    marginHorizontal: 2,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 430, height: 706 },
+    shadowOpacity: 0.3,
   },
   textContainer: { flex: 1, justifyContent: 'flex-end', paddingBottom: 70 },
   categoryText: {
@@ -269,3 +275,4 @@ const styles = {
 };
 
 export default App;
+

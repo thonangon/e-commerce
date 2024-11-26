@@ -7,9 +7,7 @@ const ProductGrid = ({ products }) => (
     <ScrollView
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
-
     >
-
         <VStack>
             <HStack flexWrap="wrap" >
                 {products.length > 0 ? (
@@ -22,27 +20,11 @@ const ProductGrid = ({ products }) => (
                     </Center>
                 )}
             </HStack>
-
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', padding: 4 }}>
-                {products.map((product, idx) => (
-                    <View
-                        key={idx}
-                        style={{
-                            width: '40%',
-                            marginBottom: 16,
-
-                        }}
-                    >
-                        <ProductCards {...product} />
-                    </View>
-                ))}
-            </View>
-            {/* <ScrollView
+            <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
-                    paddingVertical: 8,
-                    paddingHorizontal: 4,
+
                 }}
             >
                 <View style={{ flexDirection: 'row', flexWrap: 'nowrap' }}>
@@ -57,8 +39,7 @@ const ProductGrid = ({ products }) => (
                         </View>
                     ))}
                 </View>
-            </ScrollView> */}
-
+            </ScrollView>
         </VStack>
     </ScrollView>
 
