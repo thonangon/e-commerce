@@ -1,27 +1,28 @@
 import React from 'react';
 import { Box, Text } from 'native-base';
-import { Image as RNImage } from 'react-native';
+import { Image } from 'react-native';
 
-const ProductCard = ({ imageUri, title, category, price, description}) => (
-    
-    <Box bg="#fff" my={0.5} >
+const ProductCard = ({ image, category, price, description }) => (
+
+    <Box bg="#fff" >
         <Box position="relative">
-            <RNImage source={{ uri: imageUri }} style={{ width: '100%', height: 230 }} />
+            <Image
+                source={{ uri: image }}
+                style={{ width: '100%', height: 270, resizeMode: 'cover' }}
+            />
 
-            <Text fontSize="sm" bg="white" px={2} bold>
-                {title}
-            </Text>
-            <Text fontSize="sm" bg="white" px={2} bold>
+            <Text position="absolute" top={150} left={3} bg="white" fontSize="xs" color="gray.700" >
                 Code: {category}
             </Text>
-            <Text position="absolute" top={200} left={3} bg="white" px={2} fontSize="xs" color="gray.700">
+            <Text position="absolute" top={170} left={3} bg="white" fontSize="xs" color="gray.700" bold >
                 Price: ${price}
             </Text>
-            <Text position="absolute" top={220} left={3} bg="white" px={2} fontSize="xs" color="gray.700">
-                Category: {category}
-            </Text>
-            <Text position="absolute" top={170} left={3} bg="white" px={2} fontSize="xs" color="gray.700">
+
+            <Text position="absolute" top={200} left={3} fontSize="sm" bold >
                 {description}
+            </Text>
+            <Text position="absolute" top={218} left={3} fontSize="xs" color="gray.700">
+                {category}
             </Text>
         </Box>
     </Box>

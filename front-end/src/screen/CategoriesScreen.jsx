@@ -8,7 +8,7 @@ import axios from 'axios';
 import { API_URL } from '../config/index';
 import Banner from '../components/Header/Banner';
 
-  const HomeScreen = () => {
+const HomeScreen = () => {
   const navigation = useNavigation();
   const [productDataByCategory, setProductDataByCategory] = useState({});
   const [arriveLists, setArriveLists] = useState([]);
@@ -17,7 +17,7 @@ import Banner from '../components/Header/Banner';
   const [subCategoryItems, setSubCategoryItems] = useState([]);
   const mainCategories = useMemo(() => ["Men", "Women", "Kids"], []);
   const iconMap = {
-    "Shoes": "footsteps-outline",
+    "Shoe": "footsteps-outline",
     "Clothings": "shirt-outline",
     "Accessories": "glasses-outline",
   };
@@ -26,8 +26,8 @@ import Banner from '../components/Header/Banner';
       const response = await axios.get(`${API_URL}/product/product/${selectedCategory}`);
       if (response.status === 200) {
         const formattedProducts = response.data.results.map(product => ({
-          id : product.productId,
-          category:product.category?.name,
+          id: product.productId,
+          category: product.category?.name,
           name: product.productName,
           price: product.color_size_combinations[0]?.size?.price || 0,
           image: product.images[0]?.image.startsWith('http') ? product.images[0].image : `${API_URL}${product.images[0]?.image}`,
@@ -111,13 +111,13 @@ import Banner from '../components/Header/Banner';
           </TouchableOpacity>
         ))}
       </HStack>
-      <Banner/>
+      <Banner />
       <VStack space={4} mt={5}>
         {subCategories.map((subcategory, idx) => (
           <HStack key={idx} justifyContent="space-between" alignItems="center" px={4} mt={1}>
             <HStack alignItems="center">
               <Icon
-                name={iconMap[subcategory] || "help-circle-outline"} 
+                name={iconMap[subcategory] || "help-circle-outline"}
                 size={15}
                 color="black"
               />

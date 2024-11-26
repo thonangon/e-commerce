@@ -4,7 +4,7 @@ import { useRoute } from '@react-navigation/native';
 import ProductGrid from './ProductGrid';
 
 const NewArrivals = () => {
-  const route = useRoute();
+  const route = useRoute();``
   const products = route.params?.formattedProducts || [];
 
   return (
