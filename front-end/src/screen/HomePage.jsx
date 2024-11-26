@@ -62,6 +62,7 @@ const HomeScreen = () => {
       <RNScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScrollContainer}>
         <Box px={2} py={0}>
 
+
           <HStack mt={1} justifyContent="space-between" alignItems="center" space={1}>
             <VStack>
               <Select
@@ -110,9 +111,9 @@ const HomeScreen = () => {
           mainCategory.subcategories?.map((subcategory) => (
             subcategory.categories?.map((category) => {
               const imageUrl = category.image ? `http://10.0.2.2:8000${category.image}` : require('../assets/0.png');
-              
 
-              
+
+
               return (
                 <View key={category.id} onLayout={(event) => setCategoryOffset(category.id, event)}>
                   <ImageBackground source={imageUrl ? { uri: imageUrl } : require('../assets/fav2.png')} style={styles.imageBackground} resizeMode="cover">
@@ -140,6 +141,7 @@ const HomeScreen = () => {
     </Box>
   );
 };
+
 
 const Tab = createBottomTabNavigator();
 const App = () => {
@@ -239,13 +241,13 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const styles = {
   horizontalScrollContainer: { paddingVertical: 8 },
   imageBackground: {
-    height: screenHeight * 0.8, 
+    height: screenHeight * 0.8,
     flex: 1,
-    marginHorizontal: 2, 
+    marginHorizontal: 2,
     justifyContent: 'center',
-    overflow: 'hidden', 
+    overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width:430 , height: 706 },
+    shadowOffset: { width: 430, height: 706 },
     shadowOpacity: 0.3,
   },
   textContainer: { flex: 1, justifyContent: 'flex-end', paddingBottom: 70 },
@@ -273,3 +275,4 @@ const styles = {
 };
 
 export default App;
+

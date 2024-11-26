@@ -22,7 +22,7 @@ const ProductCard = ({ id, image, name, price, description, category, color }) =
     }
   };
   return (
-    <Box bg="white" rounded="md" width={250} overflow="hidden" my={3}>
+    <Box bg="white" rounded="md" width={250} overflow="hidden" >
       <Box padding={2}>
         <Image
           source={{ uri: image }}
