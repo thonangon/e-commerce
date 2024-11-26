@@ -20,8 +20,6 @@ const Favorite = () => {
     navigation.navigate('ADDRESS');
   };
 
-
-
   const removeItem = (id) => {
     dispatch(removeFavorite({ id })); 
   };

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite } from '../../store/useSlice';
 import { useNavigation } from '@react-navigation/native';
 
-const ProductCard = ({ id, image, name, price, description, category,color }) => {
+const ProductCard = ({ id, image, name, price, description, category, color }) => {
   const dispatch = useDispatch();
   const favorites = useSelector((state) => state.user?.favorites || []);
   console.log('Favorites from Redux:', favorites);
@@ -17,12 +17,24 @@ const ProductCard = ({ id, image, name, price, description, category,color }) =>
     if (isFavorite) {
       dispatch(removeFavorite({ id }));
     } else {
-      dispatch(addFavorite({ id, name, image, price, description, category,color }));
+      dispatch(addFavorite({ id, name, image, price, description, category, color }));
+      navigation.navigate('FAVORITE');
     }
   };
   return (
-    <Box bg="white" rounded="md" width={250}>
-      <Image source={{ uri: image }} alt={name} style={{ height: 350, width: '100%' }} />
+    <Box bg="white" rounded="md" width={250} overflow="hidden" my={3}>
+      <Box padding={2}>
+        <Image
+          source={{ uri: image }}
+          alt={name}
+          style={{
+            height: 350,
+            width: '100%',
+            resizeMode: 'cover',
+          }}
+        />
+      </Box>
+
       <IconButton
         icon={
           <Icon
@@ -37,6 +49,7 @@ const ProductCard = ({ id, image, name, price, description, category,color }) =>
         right={2}
         zIndex={1}
       />
+
       <Box position="absolute" top={220} left={3} padding={2} width="90%">
         <Text fontSize="md" bg="white" color="gray.400" paddingX={1} rounded="sm">
           CODE: {category}
@@ -52,6 +65,7 @@ const ProductCard = ({ id, image, name, price, description, category,color }) =>
         </Text>
       </Box>
     </Box>
+
   );
 };
 
