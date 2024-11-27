@@ -134,8 +134,22 @@ const HomeScreen = () => {
           ))
         ))}
         <Modal isOpen={isModalVisible} onClose={() => setModalVisible(false)}>
-          <Image source={require('../assets/promotions.png')} alt="Promotional Card" resizeMode="cover" height="200px" />
           <Modal.CloseButton />
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('DISCOUNT', {
+                filter: 'discounted', // Pass a parameter to indicate the filter type
+              })
+            }
+          >
+            <Image
+              source={require('../assets/promotions.png')}
+              alt="Promotional Card"
+              resizeMode="cover"
+              height="200px"
+            />
+          </TouchableOpacity>
+
         </Modal>
       </RNScrollView>
     </Box>
