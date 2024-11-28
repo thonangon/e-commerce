@@ -31,8 +31,16 @@ const ShoppingBag = () => {
   };
 
   const handlePlaceOrder = () => {
-    navigation.navigate('PLACEORDER');
+    const totalItems = selectedItems.reduce((count, item) => count + quantity, 0);
+    const totalPrice = selectedItems.reduce((total, item) => total + item.price * quantity, 0);
+  
+    navigation.navigate('PLACEORDER', {
+      items: selectedItems,
+      totalItems,
+      totalPrice,
+    });
   };
+  
 
   const route = useRoute();
   const {itemId} = route.params || {}; // Extract itemId from route params
