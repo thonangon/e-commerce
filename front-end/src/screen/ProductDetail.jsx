@@ -87,7 +87,7 @@ const ProductDetail = () => {
                 <FlatList
                     data={filteredProducts}
                     keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
-                    numColumns={2} // This sets up the two-column layout
+                    numColumns={2} 
                     renderItem={({ item }) => (
                         <Box style={styles.productContainer}>
                             <Pressable onPress={() => handleSpecificProductPress(item.id)}>
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     productContainer: {
-        width: '48%',  // Adjust the width to fit two columns with some space in between
+        width: '48%', 
         padding: 2,
         backgroundColor: 'white',
         margin: 4,
