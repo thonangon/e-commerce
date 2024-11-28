@@ -19,6 +19,7 @@ import DetailProducts from '../screen/Men/DetailProducts'
 import Tabs from './tabBar';
 import NewArrivals from '../screen/Product/New_Arrivals';
 import PaymentScreen from '../screen/payment/ProductPayment'
+import PostProduct from '../screen/Admin/PostProduct'
 
 const Stack = createNativeStackNavigator();
 const App = () => {
@@ -77,6 +78,7 @@ const App = () => {
       <Stack.Screen name="DETAILPRODUCT" component={DetailProducts} />
       <Stack.Screen name="NEWARRIVALS" component={NewArrivals}/>
       <Stack.Screen name="PAYMENT" component={PaymentScreen}/>
+      <Stack.Screen name="POSTPRODUCT" component={PostProduct}/>
     </Stack.Navigator>
   );
 }

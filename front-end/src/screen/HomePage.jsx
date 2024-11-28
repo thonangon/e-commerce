@@ -149,6 +149,7 @@ const App = () => {
   const handleLogout = () => {
     dispatch(logout());
   };
+  const PostProduct = () => navigation.navigate('POSTPRODUCT');
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -183,23 +184,36 @@ const App = () => {
           headerTitle: "HELLO",
           headerStyle: { backgroundColor: colors.bg_home },
           headerTintColor: '#fff',
-          headerRight: () => (
-            user.isAuthenticated ? (
-              <>
-
-                <HStack space={4} alignItems="center">
-                  <Text style={{ color: '#fff', marginRight: 10 }}>{user.user.email}</Text>
-                  <TouchableOpacity style={styles.row} onPress={handleLogout}>
-                    <MaterialIcons name="logout" size={26} color="white" />
-                  </TouchableOpacity>
-                </HStack>
-              </>
-            ) : (
-              <TouchableOpacity style={styles.row} onPress={handleSignup}>
-                <MaterialIcons style={{ marginTop: 13 }} name="person" size={26} color="black" />
-              </TouchableOpacity>
-            )
-          )
+          headerRight: () => {
+            if (user.isAuthenticated) {
+              if (user.isAdmin) {
+                return (
+                  <HStack space={4} alignItems="center">
+                    <Text onPress={PostProduct} style={{ color: '#fff', marginRight: 10 }}>Admin: {user.user.email}</Text>
+                    <TouchableOpacity style={styles.row} onPress={handleLogout}>
+                      <MaterialIcons name="logout" size={26} color="white" />
+                    </TouchableOpacity>
+                  </HStack>
+                );
+              } else {
+                return (
+                  <HStack space={4} alignItems="center">
+                    <Text style={{ color: '#fff', marginRight: 10 }}>{user.user.email}</Text>
+                    <TouchableOpacity style={styles.row} onPress={handleLogout}>
+                      <MaterialIcons name="logout" size={26} color="white" />
+                    </TouchableOpacity>
+                  </HStack>
+                );
+              }
+            } else {
+              return (
+                <TouchableOpacity style={styles.row} onPress={handleSignup}>
+                  <MaterialIcons style={{ marginTop: 13 }} name="person" size={26} color="black" />
+                </TouchableOpacity>
+              );
+            }
+          }
+          
         }}
         component={HomeScreen}
       />

@@ -29,7 +29,6 @@ const PaymentForm = () => {
       Alert.alert('Error', 'Please enter a valid email.');
       return;
     }
-  
     setSubmitting(true);
     try {
       const { data } = await axios.post(`${API_URL}/pay_order/make-payment`, {
@@ -50,8 +49,6 @@ const PaymentForm = () => {
         Alert.alert('Error', 'Failed to initialize payment sheet.');
         return;
       }
-
-      
 
       setShowModal(true); 
     } catch (error) {
