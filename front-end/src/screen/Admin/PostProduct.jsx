@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import axios from 'axios';
 import { API_URL } from '../../config';
 
@@ -11,47 +19,34 @@ const AddProductScreen = () => {
   const [mainCategories, setMainCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [heading, setHeading] = useState('');
   const [subheading, setSubheading] = useState('');
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [colorOptions, setColorOptions] = useState([]);
-  
   const [sizes, setSizes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const fetchColors = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const responseCategories = await axios.get(`${API_URL}/category/main-categories/`);
-      const responseColors = await axios.get(`${API_URL}/color/colors/`);
-      const responseSizes = await axios.get(`${API_URL}/size/sizes/`);
-      if (responseColors.status === 200) {
-        const formattedColors = responseColors.data.results.map((color) => ({
-          id: color.colorId,
-          name: color.colorName,
-        }));
-        setColorOptions(formattedColors);
-      }
 
-      if (responseSizes.status === 200) {
-        const formattedSizes = responseSizes.data.results.map((size) => ({
-          id: size.sizeId,
-          name: size.size_name && size.size_numeric
-            ? `${size.size_name} (${size.size_numeric})`
-            : size.size_name || size.size_numeric,
-        }));
-        setSizes(formattedSizes);
-      }
+      // Fetch Categories, Colors, and Sizes
+      const [responseCategories, responseColors, responseSizes] = await Promise.all([
+        axios.get(`${API_URL}/category/main-categories/`),
+        axios.get(`${API_URL}/color/colors/`),
+        axios.get(`${API_URL}/size/sizes/`),
+      ]);
 
+      // Handle Categories
       if (responseCategories.status === 200) {
-        const mainCategories = responseCategories.data.results.map((mainCat) => ({
+        const mainCats = responseCategories.data.results.map((mainCat) => ({
           id: mainCat.id,
           name: mainCat.name,
         }));
 
-        const subcategories = responseCategories.data.results.flatMap((mainCat) =>
+        const subCats = responseCategories.data.results.flatMap((mainCat) =>
           mainCat.subcategories?.map((subCat) => ({
             id: subCat.id,
             name: subCat.name,
@@ -59,7 +54,7 @@ const AddProductScreen = () => {
           }))
         );
 
-        const categories = responseCategories.data.results.flatMap((mainCat) =>
+        const cats = responseCategories.data.results.flatMap((mainCat) =>
           mainCat.subcategories?.flatMap((subCat) =>
             subCat.categories?.map((cat) => ({
               id: cat.id,
@@ -69,9 +64,29 @@ const AddProductScreen = () => {
           )
         );
 
-        setMainCategories(mainCategories);
-        setSubcategories(subcategories);
-        setCategories(categories);
+        setMainCategories(mainCats);
+        setSubcategories(subCats);
+        setCategories(cats);
+      }
+
+      // Handle Colors
+      if (responseColors.status === 200) {
+        const formattedColors = responseColors.data.results.map((color) => ({
+          id: color.colorId,
+          name: color.colorName,
+        }));
+        setColorOptions(formattedColors);
+      }
+
+      // Handle Sizes
+      if (responseSizes.status === 200) {
+        const formattedSizes = responseSizes.data.results.map((size) => ({
+          id: size.sizeId,
+          name: size.size_name && size.size_numeric
+            ? `${size.size_name} (${size.size_numeric})`
+            : size.size_name || size.size_numeric,
+        }));
+        setSizes(formattedSizes);
       }
     } catch (err) {
       setError('Error fetching data');
@@ -82,13 +97,53 @@ const AddProductScreen = () => {
   }, []);
 
   useEffect(() => {
-    fetchColors();
-  }, [fetchColors]);
+    fetchData();
+  }, [fetchData]);
 
-  // Handle the main category selection
   const handleMainCategoryChange = (mainCategoryId) => {
     setSelectedMainCategory(mainCategoryId);
-    setSubcategory(''); 
+    setSubcategory('');
+    setCategory('');
+  };
+
+  const handleSubmit = async () => {
+    if (!productName || !category || !subcategory || !selectedColor || !selectedSize) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+
+    const payload = {
+      name: productName,
+      heading,
+      subheading,
+      category,
+      subcategory,
+      color: selectedColor,
+      size: selectedSize,
+    };
+
+    try {
+      setLoading(true);
+      const response = await axios.post(`${API_URL}/product/products/`, payload);
+
+      if (response.status === 201) {
+        Alert.alert('Success', 'Product added successfully!');
+        // Reset form
+        setProductName('');
+        setCategory('');
+        setSubcategory('');
+        setSelectedMainCategory(null);
+        setHeading('');
+        setSubheading('');
+        setSelectedColor(null);
+        setSelectedSize(null);
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Failed to add product');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredSubcategories = subcategories.filter(
@@ -102,7 +157,8 @@ const AddProductScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Add Product</Text>
-       <TextInput
+
+      <TextInput
         style={styles.input}
         placeholder="Product Name"
         value={productName}
@@ -138,8 +194,7 @@ const AddProductScreen = () => {
           </TouchableOpacity>
         ))}
       </View>
-      
-      {/* Subcategory Selection */}
+
       {selectedMainCategory && (
         <>
           <Text style={styles.label}>Subcategory</Text>
@@ -157,7 +212,6 @@ const AddProductScreen = () => {
         </>
       )}
 
-      {/* Category Selection */}
       {subcategory && (
         <>
           <Text style={styles.label}>Category</Text>
@@ -175,7 +229,6 @@ const AddProductScreen = () => {
         </>
       )}
 
-      {/* Colors */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Colors</Text>
         <View style={styles.colorOptions}>
@@ -186,7 +239,7 @@ const AddProductScreen = () => {
                 styles.colorOption,
                 selectedColor === color.id && styles.colorOptionSelected,
               ]}
-              onPress={() => handleColorSelection(color.id)}
+              onPress={() => setSelectedColor(color.id)}
             >
               <Text
                 style={
@@ -202,14 +255,11 @@ const AddProductScreen = () => {
         </View>
         {selectedColor && (
           <Text style={styles.selectedText}>
-            Selected Color: {
-              colorOptions.find((color) => color.id === selectedColor)?.name
-            }
+            Selected Color: {colorOptions.find((color) => color.id === selectedColor)?.name}
           </Text>
         )}
       </View>
 
-      {/* Sizes */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Sizes</Text>
         <View style={styles.optionsContainer}>
@@ -220,7 +270,7 @@ const AddProductScreen = () => {
                 styles.option,
                 selectedSize === size.id && styles.optionSelected,
               ]}
-              onPress={() => handleSizeSelection(size.id)}
+              onPress={() => setSelectedSize(size.id)}
             >
               <Text
                 style={
@@ -236,19 +286,16 @@ const AddProductScreen = () => {
         </View>
         {selectedSize && (
           <Text style={styles.selectedText}>
-            Selected Size: {
-              sizes.find((size) => size.id === selectedSize)?.name
-            }
+            Selected Size: {sizes.find((size) => size.id === selectedSize)?.name}
           </Text>
         )}
       </View>
 
-
-      {/* Upload Image */}
-      <TouchableOpacity style={styles.uploadButton}>
-        <Text style={styles.uploadButtonText}>Upload Image</Text>
+      <TouchableOpacity style={styles.uploadButton} onPress={handleSubmit}>
+        <Text style={styles.uploadButtonText}>
+          {loading ? 'Submitting...' : 'Submit Product'}
+        </Text>
       </TouchableOpacity>
-
     </ScrollView>
   );
 };
